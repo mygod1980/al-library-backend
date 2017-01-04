@@ -2,33 +2,33 @@
 
 require('app-module-path').addPath(__dirname);
 
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
-var stylish = require('jshint-stylish');
-var watchify = require('watchify');
-var minimist = require('minimist');
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();
+const stylish = require('jshint-stylish');
+const watchify = require('watchify');
+const minimist = require('minimist');
 
-var knownOptions = {
+const knownOptions = {
   string: 'params',
   "default": {
     params: ''
   }
 };
 
-var options = minimist(process.argv.slice(2), knownOptions);
+const options = minimist(process.argv.slice(2), knownOptions);
 
 require('./config/init')();
 
-var config = require('./config/config');
+const config = require('./config/config');
 
-var sources = {
+const sources = {
   server: {
     views: ['app/views/**/*.*'],
     js: ['runner.js', 'migrate-db.js', 'server.js', 'tools.js', 'config/**/*.js', 'app/**/*.js', 'migrations/**/*.js']
   }
 };
 
-var debugPort = process.env.DEBUG_PORT || 5858;
+const debugPort = process.env.DEBUG_PORT || 5858;
 
 gulp.task('jshint', function () {
   return gulp.src(sources.server.js)
@@ -40,7 +40,7 @@ gulp.task('jshint', function () {
 gulp.task('lint', ['jshint']);
 
 gulp.task('watch', [], function () {
-  var readDelay;
+  let readDelay;
   readDelay = 2000;
   $.nodemon({
     script: 'runner.js',
