@@ -1,8 +1,7 @@
 {
   "name": "al-library-backend-backend",
-  "description": "Spotter Backend",
+  "description": "AL Library Backend",
   "version": "0.0.1",
-  "author": "Fedor Shubin (VedideV)",
   "private": true,
   "license": "Commercial",
   "engines": {
