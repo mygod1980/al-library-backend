@@ -1,5 +1,5 @@
 
-
+# Backend Part of AL Library
 ## Installation Guide
 
 1. Make sure you have 
@@ -17,20 +17,17 @@
     ```
     cd al-library-backend
     ```
-    
     to go to that directory
 4. Install the dependencies via npm:
  Install [Gulp](http://gulpjs.com/) globally:
 
-		npm install -g bower gulp
-			
+	```
+	npm install -g bower gulp
+	```
  	After that install  dependencies
-    
     ```
     npm install
     ```
-    
-    
 5. Run the server:
 
     ```
@@ -43,7 +40,6 @@
     
     ```
     env NODE_ENV=test  gulp migrate
-
     ```
     
     Run testing server
