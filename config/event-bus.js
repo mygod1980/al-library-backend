@@ -10,7 +10,8 @@ const eventBus = require('app/lib/event-bus');
 eventBus.EVENTS = {
   UPDATE_HEALTH: 'update.health',
   FORGOT_PASSWORD: 'password.forgot',
-  RESET_PASSWORD: 'password.reset'
+  RESET_PASSWORD: 'password.reset',
+  USER_REQUESTS_CREDENTIALS: 'user.requestsCredentials'
 };
 
 eventBus.register('app', eventBus.EVENTS);

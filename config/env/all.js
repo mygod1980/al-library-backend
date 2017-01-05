@@ -9,6 +9,8 @@ module.exports = {
   app: {
     title: appTitle
   },
+
+  productName: 'PROмова',
   
   security: {
     tokenLife: 3600,
@@ -52,6 +54,7 @@ module.exports = {
 
   defaultClient: require('../default-client'),
   defaultUser: require('../default-user'),
+  adminMail: process.env.ADMIN_MAIL,
   roles: {
     USER: 'user',
     STUDENT: 'student',

@@ -233,13 +233,10 @@ class UserController extends BaseController {
   }
 
   afterSave(scope) {
-    // user is signing up
-    if (scope.isInsert()) {
-      return this._authenticate(scope.model, scope)
-        .then((auth) => {
-          scope.context.auth = auth;
-          return auth;
-        });
+    const user = scope.getUser();
+
+    if (scope.isInsert() && !user.isAdmin()) {
+      return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError('Only admins can create new users'));
     }
   }
 

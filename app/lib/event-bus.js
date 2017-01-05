@@ -17,7 +17,7 @@ class EventBus {
 
   register(space, events) {
     if (this.spaces[space]) {
-      throw new Error('This space already registered');
+      throw new Error('This space is already registered');
     }
     this.spaces[space] = _.invert(events);
     return this;

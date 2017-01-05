@@ -20,8 +20,18 @@ const resetEmailOptions = {
   subject: 'Your password has been changed'
 };
 
+const credentialsRequestOptions = {
+  subject: 'User requests credentials',
+  to: config.adminMail
+};
+
+const credentialsRequestProcessedOptions = {
+  subject: `Account at ${config.productName} has been created`
+};
 
 const forgotTpl = pug.compileFile('app/views/templates/forgot.email.view.html');
+const credentialsRequestTpl = pug.compileFile('app/views/templates/credentials-request.email.view.html');
+const credentialsRequestProcessedTpl = pug.compileFile('app/views/templates/credentials-request-processed.email.view.html');
 const resetTpl = pug.compileFile('app/views/templates/reset.email.view.html');
 
 class EmailService {
@@ -44,6 +54,26 @@ class EmailService {
     }, forgotEmailOptions);
     
     return this._sendEmail(forgotTpl, templateData, emailData);
+  }
+
+  sendUserRequestsCredentialsEmail(event) {
+    const templateData = {
+      appName: config.productName,
+      username: event.username,
+      firstName: event.firstName,
+      lastName: event.lastName,
+      url: ''/* Link to admin panel with user data in url */
+    };
+
+    return this._sendEmail(credentialsRequestTpl, templateData, credentialsRequestOptions);
+  }
+
+  sendCredentialsRequestProcessedEmail(event) {
+    const templateData = {
+      appName: config.app.title,
+      name: event.user.username,
+      url: event.url + event.user.resetPassword.token
+    };
   }
   
   sendResetEmail(event) {

@@ -298,6 +298,39 @@ function restifizer(restifizerController, options) {
     }
   }, 'unlinkAccount');
 
+  restifizerController.actions.requestCredentials = restifizerController.normalizeAction({
+    auth: ['bearer'],
+    method: 'post',
+    path: 'request-credentials',
+    handler: function requestCredentials(scope) {
+      const body = scope.getBody();
+      const {username, firstName, lastName, role = config.roles.USER} = body;
+
+      if (!username || !firstName || !lastName) {
+        return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError());
+      }
+
+      return Model
+        .findOne({username})
+        .then((doc) => {
+          if (doc) {
+            return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(`User with username ${username} already exists`));
+          }
+
+          return eventBus.emit(
+            eventBus.EVENTS.USER_REQUESTS_CREDENTIALS,
+            {
+              username,
+              firstName,
+              lastName,
+              role
+            });
+        })
+        .then(() => {
+         return undefined;
+        });
+    }
+  }, 'requestCredentials');
 
   restifizerController.actions.logout = restifizerController.normalizeAction({
     auth: ['bearer'],
