@@ -29,9 +29,22 @@ const credentialsRequestProcessedOptions = {
   subject: `Account at ${config.productName} has been created`
 };
 
+
+const downloadLinkRequestOptions = {
+  subject: 'User requests access to publication',
+  to: config.adminMail
+};
+
+const downloadLinkRequestProcessedOptions = {
+  subject: `Access to publication has been granted`
+};
+
+
 const forgotTpl = pug.compileFile('app/views/templates/forgot.email.view.html');
 const credentialsRequestTpl = pug.compileFile('app/views/templates/credentials-request.email.view.html');
 const credentialsRequestProcessedTpl = pug.compileFile('app/views/templates/credentials-request-processed.email.view.html');
+const downloadLinkRequestTpl = pug.compileFile('app/views/templates/access-request.email.view.html');
+const downloadLinkRequestProcessedTpl = pug.compileFile('app/views/templates/access-granted.email.view.html');
 const resetTpl = pug.compileFile('app/views/templates/reset.email.view.html');
 
 class EmailService {
@@ -62,7 +75,7 @@ class EmailService {
       username: event.username,
       firstName: event.firstName,
       lastName: event.lastName,
-      url: ''/* Link to admin panel with user data in url */
+      url: '' /* TODO add URL here*/
     };
 
     return this._sendEmail(credentialsRequestTpl, templateData, credentialsRequestOptions);
@@ -70,12 +83,46 @@ class EmailService {
 
   sendCredentialsRequestProcessedEmail(event) {
     const templateData = {
-      appName: config.app.title,
-      name: event.user.username,
-      url: event.url + event.user.resetPassword.token
+      appName: config.productName,
+      username: event.username,
+      firstName: event.firstName,
+      lastName: event.lastName,
+      password: event.password,
+      url: '' /* TODO add URL here*/
     };
+
+    const options = _.extend({
+      to: event.username
+    }, credentialsRequestProcessedOptions);
+
+    return this._sendEmail(credentialsRequestProcessedTpl, templateData, options);
   }
-  
+
+  sendDownloadLinkRequestEmail(event) {
+    const templateData = {
+      appName: config.productName,
+      username: event.username,
+      firstName: event.firstName,
+      lastName: event.lastName,
+      url: '' /* TODO add URL here*/
+    };
+
+    return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);
+  }
+
+  sendDownloadLinkProcessedEmail(event) {
+    const templateData = {
+      appName: config.productName,
+      url: '' /* TODO add URL here*/
+    };
+
+    const options = _.extend({
+      to: event.username
+    }, downloadLinkRequestProcessedOptions);
+
+    return this._sendEmail(downloadLinkRequestProcessedTpl, templateData, options);
+  }
+
   sendResetEmail(event) {
 
     const templateData = {
