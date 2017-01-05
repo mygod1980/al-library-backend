@@ -11,7 +11,10 @@ eventBus.EVENTS = {
   UPDATE_HEALTH: 'update.health',
   FORGOT_PASSWORD: 'password.forgot',
   RESET_PASSWORD: 'password.reset',
-  USER_REQUESTS_CREDENTIALS: 'user.requestsCredentials'
+  USER_REQUESTS_CREDENTIALS: 'user.requestsCredentials',
+  CREDENTIALS_REQUEST_PROCESSED: 'user.credentialsRequestProcessed',
+  DOWNLOAD_LINK_REQUEST: 'publication.downloadLinkRequest',
+  DOWNLOAD_LINK_REQUEST_PROCESSED: 'publication.downloadLinkRequestProcessed'
 };
 
 eventBus.register('app', eventBus.EVENTS);

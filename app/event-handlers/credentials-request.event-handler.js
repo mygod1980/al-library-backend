@@ -14,5 +14,12 @@ module.exports = (eventBus) => {
     emailService.sendCredentialsRequestProcessedEmail(event);
   });
 
+  eventBus.on(eventBus.EVENTS.USER_REQUESTS_CREDENTIALS, function (event) {
+    emailService.sendUserRequestsCredentialsEmail(event);
+  });
+
+  eventBus.on(eventBus.EVENTS.CREDENTIALS_REQUEST_PROCESSED, function (event) {
+    emailService.sendCredentialsRequestProcessedEmail(event);
+  });
 
 };
