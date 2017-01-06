@@ -51,7 +51,7 @@ const Request = mongoose.model('Request');
  * @apiPermission bearer
  *
  * @apiParam {String} _id request id
- * 
+ *
  *
  * @apiUse BearerAuthHeader
  * @apiUse RequestResponse
@@ -140,19 +140,32 @@ class RequestController extends BaseController {
   beforeSave(scope) {
     const {model, source} = scope;
     const extra = scope.getBody();
+    const isRegistration = source.type === Request.TYPES.REGISTRATION;
 
     if (model.status === Request.STATUSES.PENDING) {
       if (source.status === Request.STATUSES.APPROVED) {
-        if (source.type === Request.TYPES.REGISTRATION) {
-          const event = Object.assign({}, extra);
-
-          eventBus.emit(eventBus.EVENTS.REGISTRATION_REQUEST, event);
+        if (isRegistration) {
+          eventBus.emit(eventBus.EVENTS.REGISTRATION_REQUEST_APPROVED, extra);
         } else /* source.type === Request.TYPES.DOWNLOAD_LINK */ {
-          const event = Object.assign({}, extra);
+          eventBus.emit(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED, extra);
         }
-      } else {
-
+      } else if (source.status === Request.STATUSES.REJECTED) {
+        if (isRegistration) {
+          eventBus.emit(eventBus.EVENTS.REGISTRATION_REQUEST_REJECTED, extra);
+        } else /* source.type === Request.TYPES.DOWNLOAD_LINK */ {
+          eventBus.emit(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED, extra);
+        }
       }
+    }
+  }
+
+  afterSave(scope) {
+    const body = scope.getBody();
+    const eventName = body.type === Request.TYPES.REGISTRATION ?
+      eventBus.EVENTS.REGISTRATION_REQUEST :
+      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST;
+    if (scope.isInsert()) {
+      eventBus.emit(eventName, body);
     }
   }
 }

@@ -111,9 +111,7 @@ class EmailService {
       appName: config.productName,
       username: event.username,
       firstName: event.firstName,
-      lastName: event.lastName,
-      password: event.password,
-      url: '' /* TODO add URL here*/
+      lastName: event.lastName
     };
 
     const options = _.extend({
