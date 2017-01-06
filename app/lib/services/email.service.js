@@ -69,7 +69,7 @@ class EmailService {
     return this._sendEmail(forgotTpl, templateData, emailData);
   }
 
-  sendUserRequestsCredentialsEmail(event) {
+  sendRegistrationRequestEmail(event) {
     const templateData = {
       appName: config.productName,
       username: event.username,
@@ -81,7 +81,7 @@ class EmailService {
     return this._sendEmail(credentialsRequestTpl, templateData, credentialsRequestOptions);
   }
 
-  sendCredentialsRequestProcessedEmail(event) {
+  sendRegistrationRequestApprovedEmail(event) {
     const templateData = {
       appName: config.productName,
       username: event.username,
@@ -110,7 +110,7 @@ class EmailService {
     return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);
   }
 
-  sendDownloadLinkProcessedEmail(event) {
+  sendDownloadLinkApprovedEmail(event) {
     const templateData = {
       appName: config.productName,
       url: '' /* TODO add URL here*/

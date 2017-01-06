@@ -1,5 +1,5 @@
 /**
- * Created by eugenia on 29/04/16.
+ * Created by eugenia on 03.01.2017.
  */
 'use strict';
 
@@ -11,10 +11,12 @@ eventBus.EVENTS = {
   UPDATE_HEALTH: 'update.health',
   FORGOT_PASSWORD: 'password.forgot',
   RESET_PASSWORD: 'password.reset',
-  USER_REQUESTS_CREDENTIALS: 'user.requestsCredentials',
-  CREDENTIALS_REQUEST_PROCESSED: 'user.credentialsRequestProcessed',
-  DOWNLOAD_LINK_REQUEST: 'publication.downloadLinkRequest',
-  DOWNLOAD_LINK_REQUEST_PROCESSED: 'publication.downloadLinkRequestProcessed'
+  REGISTRATION_REQUEST: 'request.registration',
+  REGISTRATION_REQUEST_APPROVED: 'request.registration.approved',
+  REGISTRATION_REQUEST_REJECTED: 'request.registration.rejected',
+  DOWNLOAD_LINK_REQUEST: 'request.downloadLink',
+  DOWNLOAD_LINK_REQUEST_APPROVED: 'request.downloadLink.approved',
+  DOWNLOAD_LINK_REQUEST_REJECTED: 'request.downloadLink.rejected'
 };
 
 eventBus.register('app', eventBus.EVENTS);

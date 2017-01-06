@@ -5,7 +5,7 @@
 const _ = require('lodash');
 const config = require('config/config');
 const {types, statuses} = config.request;
-const modelName = 'Author';
+const modelName = 'Request';
 
 module.exports = function (mongoose) {
   const schema = new mongoose.Schema({
@@ -30,6 +30,9 @@ module.exports = function (mongoose) {
     }
 
   }, {timestamps: true});
+
+  schema.statics.STATUSES = statuses;
+  schema.statics.TYPES = types;
 
   return mongoose.model(modelName, schema);
 };
