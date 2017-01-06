@@ -5,13 +5,13 @@ const appTitle = 'al-library-backend-backend';
 module.exports = {
   port: process.env.PORT || 1340,
   mongo: process.env.MONGO_URL || process.env.MONGODB_URI || 'mongodb://localhost/al-library-backend',
-  
+
   app: {
     title: appTitle
   },
 
   productName: 'PROмова',
-  
+
   security: {
     tokenLife: 3600,
     jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature'
@@ -40,7 +40,7 @@ module.exports = {
     appName: process.env.NEW_RELIC_APP_NAME || appTitle,
     logLevel: process.env.NEW_RELIC_LOG_LEVEL || 'info'
   },
-  
+
   urls: {
     resetPassword: 'https://your-domain.com/#/reset_password/' || process.env.URL_RESET_PASSWORD
   },
@@ -59,5 +59,16 @@ module.exports = {
     USER: 'user',
     STUDENT: 'student',
     ADMIN: 'admin'
+  },
+  request: {
+    types: {
+      REGISTRATION: 'registration',
+      DOWNLOAD_LINK: 'downloadLink'
+    },
+    statuses: {
+      PENDING: 'pending',
+      APPROVED: 'approved',
+      REJECTED: 'rejected'
+    }
   }
 };
