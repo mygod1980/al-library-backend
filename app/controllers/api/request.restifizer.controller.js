@@ -141,20 +141,19 @@ class RequestController extends BaseController {
     const {model, source} = scope;
     const extra = scope.getBody();
     const isRegistration = source.type === Request.TYPES.REGISTRATION;
+    const rejectedEventName = isRegistration ?
+      eventBus.EVENTS.REGISTRATION_REQUEST_REJECTED :
+      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED;
+    const approvedEventName = isRegistration ?
+      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED :
+      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED;
+
 
     if (model.status === Request.STATUSES.PENDING) {
       if (source.status === Request.STATUSES.APPROVED) {
-        if (isRegistration) {
-          eventBus.emit(eventBus.EVENTS.REGISTRATION_REQUEST_APPROVED, extra);
-        } else /* source.type === Request.TYPES.DOWNLOAD_LINK */ {
-          eventBus.emit(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED, extra);
-        }
+        eventBus.emit(approvedEventName, extra);
       } else if (source.status === Request.STATUSES.REJECTED) {
-        if (isRegistration) {
-          eventBus.emit(eventBus.EVENTS.REGISTRATION_REQUEST_REJECTED, extra);
-        } else /* source.type === Request.TYPES.DOWNLOAD_LINK */ {
-          eventBus.emit(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED, extra);
-        }
+        eventBus.emit(rejectedEventName, extra);
       }
     }
   }
