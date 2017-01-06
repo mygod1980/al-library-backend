@@ -25,26 +25,34 @@ const credentialsRequestOptions = {
   to: config.adminMail
 };
 
-const credentialsRequestProcessedOptions = {
-  subject: `Account at ${config.productName} has been created`
+const credentialsRequestApprovedOptions = {
+  subject: `Ваш акаунт у системі ${config.productName}`
 };
 
+const credentialsRequestRejectedOptions = {
+  subject: `Запит на реєстрацію відхилено`
+};
 
 const downloadLinkRequestOptions = {
-  subject: 'User requests access to publication',
+  subject: 'Новий запит на завантаження',
   to: config.adminMail
 };
 
-const downloadLinkRequestProcessedOptions = {
-  subject: `Access to publication has been granted`
+const downloadLinkRequestApprovedOptions = {
+  subject: 'Доступ до ресурсу'
 };
 
+const downloadLinkRequestRejectedOptions = {
+  subject: 'Запит відхилено'
+};
 
 const forgotTpl = pug.compileFile('app/views/templates/forgot.email.view.html');
-const credentialsRequestTpl = pug.compileFile('app/views/templates/credentials-request.email.view.html');
-const credentialsRequestProcessedTpl = pug.compileFile('app/views/templates/credentials-request-processed.email.view.html');
-const downloadLinkRequestTpl = pug.compileFile('app/views/templates/access-request.email.view.html');
-const downloadLinkRequestProcessedTpl = pug.compileFile('app/views/templates/access-granted.email.view.html');
+const credentialsRequestTpl = pug.compileFile('app/views/templates/request.registration.email.view.html');
+const credentialsRequestApprovedTpl = pug.compileFile('app/views/templates/request.registration.approved.email.view.html');
+const credentialsRequestRejectedTpl = pug.compileFile('app/views/templates/request.registration.rejected.email.view.html');
+const downloadLinkRequestTpl = pug.compileFile('app/views/templates/request.downloadLink.email.view.html');
+const downloadLinkRequestApprovedTpl = pug.compileFile('app/views/templates/request.downloadLink.approved.email.view.html');
+const downloadLinkRequestRejectedTpl = pug.compileFile('app/views/templates/request.downloadLink.rejected.email.view.html');
 const resetTpl = pug.compileFile('app/views/templates/reset.email.view.html');
 
 class EmailService {
@@ -65,7 +73,7 @@ class EmailService {
     const emailData = _.extend({
       to: event.user.username
     }, forgotEmailOptions);
-    
+
     return this._sendEmail(forgotTpl, templateData, emailData);
   }
 
@@ -93,9 +101,26 @@ class EmailService {
 
     const options = _.extend({
       to: event.username
-    }, credentialsRequestProcessedOptions);
+    }, credentialsRequestApprovedOptions);
 
-    return this._sendEmail(credentialsRequestProcessedTpl, templateData, options);
+    return this._sendEmail(credentialsRequestApprovedTpl, templateData, options);
+  }
+
+  sendRegistrationRequestRejectedEmail(event) {
+    const templateData = {
+      appName: config.productName,
+      username: event.username,
+      firstName: event.firstName,
+      lastName: event.lastName,
+      password: event.password,
+      url: '' /* TODO add URL here*/
+    };
+
+    const options = _.extend({
+      to: event.username
+    }, credentialsRequestRejectedOptions);
+
+    return this._sendEmail(credentialsRequestRejectedTpl, templateData, options);
   }
 
   sendDownloadLinkRequestEmail(event) {
@@ -118,10 +143,25 @@ class EmailService {
 
     const options = _.extend({
       to: event.username
-    }, downloadLinkRequestProcessedOptions);
+    }, downloadLinkRequestApprovedOptions);
 
-    return this._sendEmail(downloadLinkRequestProcessedTpl, templateData, options);
+    return this._sendEmail(downloadLinkRequestApprovedTpl, templateData, options);
   }
+
+
+  sendDownloadLinkRejectedEmail(event) {
+    const templateData = {
+      appName: config.productName,
+      url: '' /* TODO add URL here*/
+    };
+
+    const options = _.extend({
+      to: event.username
+    }, downloadLinkRequestRejectedOptions);
+
+    return this._sendEmail(downloadLinkRequestRejectedTpl, templateData, options);
+  }
+
 
   sendResetEmail(event) {
 
@@ -129,11 +169,11 @@ class EmailService {
       appName: config.app.title,
       name: event.user.username
     };
-    
+
     const emailData = _.extend({
       to: event.user.username
     }, resetEmailOptions);
-    
+
     return this._sendEmail(resetTpl, templateData, emailData);
   }
 
