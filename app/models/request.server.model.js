@@ -20,6 +20,10 @@ module.exports = function (mongoose) {
       'default': statuses.PENDING,
       required: true
     },
+    username: {
+      type: String,
+      required: true
+    },
     extra: {
       /* if type is registration `extra` contains username, firstName, lastName, role
        * else

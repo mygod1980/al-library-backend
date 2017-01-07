@@ -3,6 +3,7 @@
  */
 'use strict';
 
+const Request = require('config/mongoose').model('Request');
 const emailService = new require('app/lib/services/email.service');
 
 module.exports = (eventBus) => {

@@ -139,15 +139,41 @@ class RequestController extends BaseController {
 
   beforeSave(scope) {
     const {model, source} = scope;
-    const extra = scope.getBody();
+    const {extra} = scope.getBody();
     const isRegistration = source.type === Request.TYPES.REGISTRATION;
+
+
+    if (scope.isInsert()) {
+      const missingFields = [];
+      let requiredFields;
+      if (isRegistration) {
+        requiredFields = ['firstName', 'lastName'];
+      } else {
+        requiredFields = ['publicationId'];
+      }
+
+      requiredFields.map((field) => {
+        if (!model.extra[field]) {
+          return missingFields.push(field);
+        }
+
+        return field;
+      });
+
+      if (missingFields.length > 0) {
+        return Bb.reject(
+          HTTP_STATUSES.BAD_REQUEST.createError(`Some required data is missing: ${missingFields.join(', ')}`)
+        );
+      }
+    }
+
+
     const rejectedEventName = isRegistration ?
       eventBus.EVENTS.REGISTRATION_REQUEST_REJECTED :
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED;
     const approvedEventName = isRegistration ?
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED :
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED;
-
 
     if (model.status === Request.STATUSES.PENDING) {
       if (source.status === Request.STATUSES.APPROVED) {
@@ -160,11 +186,12 @@ class RequestController extends BaseController {
 
   afterSave(scope) {
     const body = scope.getBody();
+    const {extra} = body;
     const eventName = body.type === Request.TYPES.REGISTRATION ?
       eventBus.EVENTS.REGISTRATION_REQUEST :
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST;
     if (scope.isInsert()) {
-      eventBus.emit(eventName, body);
+      eventBus.emit(eventName, extra);
     }
   }
 }
