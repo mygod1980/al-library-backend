@@ -1,7 +1,3 @@
-/**
- * Created by vedi on 10/10/15.
- */
-
 'use strict';
 
 const _ = require('lodash');
