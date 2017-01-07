@@ -139,7 +139,7 @@ class RequestController extends BaseController {
 
   beforeSave(scope) {
     const {model, source} = scope;
-    const {extra} = scope.getBody();
+    const {extra} = source;
     const isRegistration = source.type === Request.TYPES.REGISTRATION;
 
 

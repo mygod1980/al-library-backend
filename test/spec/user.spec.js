@@ -19,13 +19,17 @@ describe('User profile', () => {
     return specHelper.signInUser(adminUser);
   });
 
-  describe('Sign up', () => {
+  describe('Create user by admin', () => {
 
     let response;
 
     before('send post', () => {
       return chakram
-        .post(`${config.baseUrl}/api/users`, Object.assign({}, user, specHelper.getClientAuth()))
+        .post(`${config.baseUrl}/api/users`, Object.assign({}, user), {
+          headers: {
+            'Authorization': `Bearer ${adminUser.auth['access_token']}`
+          }
+        })
         .then((result) => {
           response = result;
         });
@@ -40,7 +44,6 @@ describe('User profile', () => {
       return expect(response.body._id).to.exist;
     });
   });
-
   describe('Sign in', () => {
 
     let response;
@@ -61,6 +64,45 @@ describe('User profile', () => {
       user.auth = _.pick(response.body, 'access_token', 'refresh_token');
     });
 
+  });
+
+  describe('Create user by plain user', () => {
+
+    let response;
+
+    before('send post', () => {
+      return chakram
+        .post(`${config.baseUrl}/api/users`, Object.assign({}, user),
+          {
+            headers: {
+              'Authorization': `Bearer ${user.auth['access_token']}`
+            }
+          })
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 403', () => {
+      return expect(response).to.have.status(403);
+    });
+  });
+
+  describe('Create user by client', () => {
+
+    let response;
+
+    before('send post', () => {
+      return chakram
+        .post(`${config.baseUrl}/api/users`, Object.assign({}, user, specHelper.getClientAuth()))
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 401', () => {
+      return expect(response).to.have.status(401);
+    });
   });
 
   describe('Get List by admin', () => {

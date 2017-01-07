@@ -123,12 +123,6 @@ class UserController extends BaseController {
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
-        }),
-        insert: BaseController.createAction({
-          auth: [
-            BaseController.AUTH.BEARER,
-            BaseController.AUTH.CLIENT
-          ]
         })
       },
 
@@ -223,20 +217,16 @@ class UserController extends BaseController {
       params._id = user.id;
     }
 
+    if (scope.isInsert() && !user.isAdmin()) {
+      return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError('Only admins can create new users'));
+    }
+
     if (scope.isSelect() && !scope.isSelectOne() && !user.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
 
     if (params._id && !user._id.equals(params._id) && !user.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
-    }
-  }
-
-  afterSave(scope) {
-    const user = scope.getUser();
-
-    if (scope.isInsert() && !user.isAdmin()) {
-      return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError('Only admins can create new users'));
     }
   }
 

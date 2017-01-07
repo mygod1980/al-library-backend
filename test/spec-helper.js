@@ -98,9 +98,14 @@ const specHelper = {
       });
   },
 
-  createUser(data) {
+  createUser(data, accessToken) {
     return this
-      .post(`${testConfig.baseUrl}/api/users`, Object.assign({}, data, this.getClientAuth()))
+      .post(`${testConfig.baseUrl}/api/users`, data,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
       .then((result) => {
         data._id = result.body._id;
         return result.body;
