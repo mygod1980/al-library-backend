@@ -8,5 +8,6 @@ module.exports = {
     clientId: process.env.CLIENT_KEY || 'testDefault',
     clientSecret: process.env.CLIENT_SECRET || 'testDefault'
 	},
-  coverageEnabled: false
+  coverageEnabled: false,
+  adminMail: 'admin@test.com'
 };

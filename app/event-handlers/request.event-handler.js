@@ -24,11 +24,11 @@ module.exports = (eventBus) => {
   });
 
   eventBus.on(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED, function (event) {
-    emailService.sendDownloadLinkApprovedEmail(event);
+    emailService.sendDownloadLinkRequestApprovedEmail(event);
   });
 
   eventBus.on(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED, function (event) {
-    emailService.sendDownloadLinkRejectedEmail(event);
+    emailService.sendDownloadLinkRequestRejectedEmail(event);
   });
 
 };

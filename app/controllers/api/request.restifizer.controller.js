@@ -114,13 +114,19 @@ class RequestController extends BaseController {
         'createdAt',
         'updatedAt'
       ],
-      readOnlyFields: ['createdAt', 'updatedAt'],
+      readOnlyFields: ['createdAt', 'updatedAt', 'type', 'extra'],
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
         }),
         insert: BaseController.createAction({
           auth: [BaseController.AUTH.CLIENT]
+        }),
+        update: BaseController.createAction({
+          enabled: false
+        }),
+        'delete': BaseController.createAction({
+          auth: [BaseController.AUTH.BEARER]
         })
       }
     });
@@ -139,7 +145,6 @@ class RequestController extends BaseController {
 
   beforeSave(scope) {
     const {model, source} = scope;
-    const {extra} = source;
     const isRegistration = source.type === Request.TYPES.REGISTRATION;
 
 
@@ -166,22 +171,6 @@ class RequestController extends BaseController {
         );
       }
     }
-
-
-    const rejectedEventName = isRegistration ?
-      eventBus.EVENTS.REGISTRATION_REQUEST_REJECTED :
-      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED;
-    const approvedEventName = isRegistration ?
-      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED :
-      eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED;
-
-    if (model.status === Request.STATUSES.PENDING) {
-      if (source.status === Request.STATUSES.APPROVED) {
-        eventBus.emit(approvedEventName, extra);
-      } else if (source.status === Request.STATUSES.REJECTED) {
-        eventBus.emit(rejectedEventName, extra);
-      }
-    }
   }
 
   afterSave(scope) {
@@ -190,8 +179,9 @@ class RequestController extends BaseController {
     const eventName = body.type === Request.TYPES.REGISTRATION ?
       eventBus.EVENTS.REGISTRATION_REQUEST :
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST;
+
     if (scope.isInsert()) {
-      eventBus.emit(eventName, extra);
+      eventBus.emit(eventName, Object.assign({username: body.username}, extra));
     }
   }
 }

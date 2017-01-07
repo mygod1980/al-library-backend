@@ -111,7 +111,8 @@ class EmailService {
       appName: config.productName,
       username: event.username,
       firstName: event.firstName,
-      lastName: event.lastName
+      lastName: event.lastName,
+      adminMail: config.adminMail
     };
 
     const options = _.extend({
@@ -133,7 +134,7 @@ class EmailService {
     return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);
   }
 
-  sendDownloadLinkApprovedEmail(event) {
+  sendDownloadLinkRequestApprovedEmail(event) {
     const templateData = {
       appName: config.productName,
       url: '' /* TODO add URL here*/
@@ -147,10 +148,10 @@ class EmailService {
   }
 
 
-  sendDownloadLinkRejectedEmail(event) {
+  sendDownloadLinkRequestRejectedEmail(event) {
     const templateData = {
       appName: config.productName,
-      url: '' /* TODO add URL here*/
+      adminMail: config.adminMail
     };
 
     const options = _.extend({
