@@ -17,16 +17,16 @@ function restifizer(restifizerController) {
     method: 'post',
     path: ':_id/:action',
     handler: function changeStatus(scope) {
-
-      const user = scope.getUser();
       const {action} = scope.getParams();
 
-      if (!user.isAdmin()) {
+      delete scope.req.params.action;
+
+      if (!scope.isAdmin()) {
         return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError(`Only admins can ${action} requests`));
       }
 
       let isRegistration;
-      let actionName;
+      let eventName;
       const context = {};
       return this
         .locateModel(scope)
@@ -45,14 +45,12 @@ function restifizer(restifizerController) {
             eventBus.EVENTS.REGISTRATION_REQUEST_APPROVED :
             eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED;
 
-          actionName = action === 'approve' ? approvedEventName : rejectedEventName;
+          eventName = action === 'approve' ? approvedEventName : rejectedEventName;
 
           if (action === 'approve') {
             doc.set('status', Request.STATUSES.APPROVED);
-            eventBus.emit(approvedEventName, Object.assign({username: doc.username}, doc.extra));
           } else if (action === 'reject') {
             doc.set('status', Request.STATUSES.REJECTED);
-            eventBus.emit(rejectedEventName, Object.assign({username: doc.username}, doc.extra));
           } else {
             throw new Error('Unknown status');
           }
@@ -63,20 +61,21 @@ function restifizer(restifizerController) {
             }
           };
 
-
           return Bb.join(doc.save(), getPublication());
         })
         .spread((doc, publication) => {
 
           const extra = Object.assign({username: doc.username}, doc.extra);
-          if (isRegistration) {
+          if (!isRegistration) {
 
             if (!publication) {
               return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Publication does not exist'));
             }
             extra.publication = publication;
           }
-          eventBus.emit(actionName, extra);
+          eventBus.emit(eventName, extra);
+
+          return doc;
         });
     }
   }, 'changeStatus');

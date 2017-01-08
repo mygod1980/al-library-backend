@@ -217,15 +217,15 @@ class UserController extends BaseController {
       params._id = user.id;
     }
 
-    if (scope.isInsert() && !user.isAdmin()) {
+    if (scope.isInsert() && !scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError('Only admins can create new users'));
     }
 
-    if (scope.isSelect() && !scope.isSelectOne() && !user.isAdmin()) {
+    if (scope.isSelect() && !scope.isSelectOne() && !scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
 
-    if (params._id && !user._id.equals(params._id) && !user.isAdmin()) {
+    if (params._id && !user._id.equals(params._id) && !scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }

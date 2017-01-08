@@ -145,7 +145,7 @@ class PublicationController extends BaseController {
   pre(scope) {
     const user = scope.getUser();
 
-    if (!user.isAdmin()) {
+    if (!scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }

@@ -8,12 +8,12 @@ const Bb = require('bluebird');
 
 const HTTP_STATUSES = require('http-statuses');
 const mongoose = require('config/mongoose');
+const ObjectId = mongoose.Types.ObjectId
 const config = require('config/config');
-const BaseController = require('app/lib/base.restifizer.controller');
 const eventBus = require('config/event-bus');
-const ObjectId = mongoose.Schema.Types.ObjectId;
 const Request = mongoose.model('Request');
-
+const BaseController = require('app/lib/base.restifizer.controller');
+const requestPlugin = require('app/lib/restifizer.plugin/request.restifizer.plugin');
 /**
  * @apiDefine RequestRequest
  * @apiParam {String} type type, one of ['registration', 'downloadLink']
@@ -110,11 +110,12 @@ class RequestController extends BaseController {
       fields: [
         'type',
         'status',
+        'username',
         'extra',
         'createdAt',
         'updatedAt'
       ],
-      readOnlyFields: ['createdAt', 'updatedAt', 'type', 'extra'],
+      readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
@@ -128,7 +129,12 @@ class RequestController extends BaseController {
         'delete': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
         })
-      }
+      },
+      plugins: [
+        {
+          plugin: requestPlugin.restifizer
+        }
+      ]
     });
 
     super(options);
@@ -136,17 +142,14 @@ class RequestController extends BaseController {
   }
 
   pre(scope) {
-    const user = scope.getUser();
-
-    if (!user.isAdmin() && !scope.isInsert()) {
+    if (!scope.isAdmin() && !scope.isInsert()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
 
   beforeSave(scope) {
-    const {model, source} = scope;
+    const {source} = scope;
     const isRegistration = source.type === Request.TYPES.REGISTRATION;
-
 
     if (scope.isInsert()) {
       const missingFields = [];
@@ -158,11 +161,11 @@ class RequestController extends BaseController {
       }
 
       requiredFields.map((field) => {
-        if (!model.extra[field]) {
+        if (!source.extra[field]) {
           return missingFields.push(field);
         }
 
-        if (field === 'publicationId' && !ObjectId.isValid(model.extra[field])) {
+        if (field === 'publicationId' && !ObjectId.isValid(source.extra[field])) {
           return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Cast to ObjectId failed'));
         }
 
@@ -175,6 +178,8 @@ class RequestController extends BaseController {
         );
       }
     }
+
+    return super.beforeSave(scope);
   }
 
   afterSave(scope) {

@@ -4,7 +4,7 @@
 module.exports = (seed) => {
   return {
     title: `Fake Publication ${seed}`,
-    publishedAt: new Date(),
+    publishedAt: new Date().getFullYear(),
     description: `fake description ${seed}`,
     imageUrl: `fake-url${seed}fake.com`,
     downloadUrl: `fake-url${seed}fake.com`

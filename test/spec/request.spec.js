@@ -60,7 +60,7 @@ describe('Request', () => {
         });
     });
 
-    before('send request', () => {
+    before('get emails', () => {
       return specHelper
         .fetchAndClearSentEmails()
         .then((result) => sentEmails = result);
@@ -76,17 +76,42 @@ describe('Request', () => {
 
     it('should have sent username in email', () => {
       expect(sentEmails[0].html.indexOf(downloadLinkRequest.username)).to.be.above(-1);
+      Object.assign(downloadLinkRequest, response.body);
     });
   });
 
-  describe('Approve downloadLink request', () => {
+  describe('Approve downloadLink request by user', () => {
 
     let response;
     let sentEmails;
 
     before('send request', () => {
       return chakram
-        .patch(`${baseUrl}/${downloadLinkRequest._id}/approve`, {},
+        .post(`${baseUrl}/${downloadLinkRequest._id}/approve`, {},
+          {headers: {'Authorization': `Bearer ${user.auth['access_token']}`}})
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    before('send request', () => {
+      return specHelper
+        .fetchAndClearSentEmails()
+        .then((result) => sentEmails = result);
+    });
+
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
+    });
+  });
+  describe('Approve downloadLink request by admin', () => {
+
+    let response;
+    let sentEmails;
+
+    before('send request', () => {
+      return chakram
+        .post(`${baseUrl}/${downloadLinkRequest._id}/approve`, {},
           {headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}})
         .then((result) => {
           response = result;
@@ -124,7 +149,7 @@ describe('Request', () => {
 
     before('send request', () => {
       return chakram
-        .patch(`${baseUrl}/${downloadLinkRequest._id}/reject`, {},
+        .post(`${baseUrl}/${downloadLinkRequest._id}/reject`, {},
           {headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}})
         .then((result) => {
           response = result;
@@ -153,13 +178,13 @@ describe('Request', () => {
 
     before('send request', () => {
       return chakram
-        .post(Object.assign({extra}, registrationRequest, specHelper.getClientAuth()))
+        .post(`${baseUrl}`, Object.assign({extra}, registrationRequest, specHelper.getClientAuth()))
         .then((result) => {
           response = result;
         });
     });
 
-    before('send request', () => {
+    before('get emails', () => {
       return specHelper
         .fetchAndClearSentEmails()
         .then((result) => sentEmails = result);
@@ -167,6 +192,7 @@ describe('Request', () => {
 
     it('should return status 201', () => {
       expect(response).to.have.status(201);
+      Object.assign(registrationRequest, response.body);
     });
 
     it('should have sent 1 email', () => {
@@ -185,6 +211,44 @@ describe('Request', () => {
       expect(sentEmails[0].html.indexOf(registrationRequest.extra.lastName)).to.be.above(-1);
     });
 
+  });
+
+  describe('Reject registration request', () => {
+
+    let response;
+    let sentEmails;
+
+    before('send request', () => {
+      return chakram
+        .post(`${baseUrl}/${registrationRequest._id}/reject`, {},
+          {headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}})
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    before('send request', () => {
+      return specHelper
+        .fetchAndClearSentEmails()
+        .then((result) => sentEmails = result);
+    });
+
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('should change status to "rejected"', () => {
+      expect(response.body.status).to.be.equal(Request.STATUSES.REJECTED);
+      Object.assign(registrationRequest, response.body);
+    });
+
+    it('should have sent 1 email', () => {
+      expect(sentEmails.length).to.be.equal(1);
+    });
+
+    it(`should have sent email to ${registrationRequest.username}`, () => {
+      expect(sentEmails[0].to).to.be.equal(registrationRequest.username);
+    });
   });
 
   describe('Get List by admin', () => {
@@ -239,10 +303,10 @@ describe('Request', () => {
 
     before('send request', () => {
       return chakram
-        .get(`${config.baseUrl}/api/requests/${downloadLinkRequest._id}`,
+        .get(`${baseUrl}/${downloadLinkRequest._id}`,
           {
             headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
+              'Authorization': `Bearer ${adminUser.auth['access_token']}`
             }
           })
         .then((result) => {
@@ -274,7 +338,7 @@ describe('Request', () => {
           },
           {
             headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
+              'Authorization': `Bearer ${adminUser.auth['access_token']}`
             }
           }
         )
@@ -317,7 +381,7 @@ describe('Request', () => {
     });
   });
 
-  describe('Remove by admin', () => {
+  describe('Remove by user', () => {
 
     let response;
 
@@ -337,23 +401,23 @@ describe('Request', () => {
         });
     });
 
-    it('should return status 204', () => {
-      expect(response).to.have.status(204);
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
     });
   });
 
-  describe('Remove by user', () => {
+  describe('Remove by admin', () => {
 
     let response;
 
     before('send request', () => {
 
       return chakram
-        .delete(`${config.baseUrl}/api/requests/me`,
+        .delete(`${baseUrl}/${downloadLinkRequest._id}`,
           {},
           {
             headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
+              'Authorization': `Bearer ${adminUser.auth['access_token']}`
             }
           }
         )
@@ -362,8 +426,8 @@ describe('Request', () => {
         });
     });
 
-    it('should return status 403', () => {
-      expect(response).to.have.status(403);
+    it('should return status 204', () => {
+      expect(response).to.have.status(204);
     });
   });
 
