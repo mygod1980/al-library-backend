@@ -30,10 +30,6 @@ module.exports = function (mongoose) {
     },
     publishedAt: {
       type: Number
-    },
-    // upload to s3 or some other storage
-    downloadLink: {
-      type: String
     }
   }, {timestamps: true});
 

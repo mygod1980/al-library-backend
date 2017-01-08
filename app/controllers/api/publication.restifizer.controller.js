@@ -126,7 +126,6 @@ class PublicationController extends BaseController {
         'publishedAt',
         'description',
         'categories',
-        'downloadLink',
         'createdAt',
         'updatedAt'
       ],
@@ -144,14 +143,10 @@ class PublicationController extends BaseController {
 
   pre(scope) {
 
-    if (!scope.isAdmin()) {
+    if (!scope.isAdmin() && scope.isChanging()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
-
-  // TODO: create unauthenticated route for unauthenticated users
-
-
 }
 
 module.exports = PublicationController;

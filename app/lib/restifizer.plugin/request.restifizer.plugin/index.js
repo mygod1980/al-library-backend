@@ -71,7 +71,10 @@ function restifizer(restifizerController) {
             if (!publication) {
               return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Publication does not exist'));
             }
+
             extra.publication = publication;
+            extra.downloadLink = `${scope.req.protocol }://${scope.req.get('host')}`+
+              `/api/publications/${publication._id}/download`;
           }
           eventBus.emit(eventName, extra);
 

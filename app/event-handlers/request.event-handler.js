@@ -2,8 +2,9 @@
  * Created by eugenia on 05.01.2017.
  */
 'use strict';
-
+const crypto = require('crypto');
 const Request = require('config/mongoose').model('Request');
+const AccessCode = require('config/mongoose').model('AccessCode');
 const emailService = new require('app/lib/services/email.service');
 
 module.exports = (eventBus) => {
@@ -20,15 +21,52 @@ module.exports = (eventBus) => {
   });
 
   eventBus.on(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST, function (event) {
-    emailService.sendDownloadLinkRequestEmail(event);
+    const accessCode = {
+      code: crypto.randomBytes(32).toString('base64'),
+      requester: event.username,
+      publication: event.publication._id
+    };
+
+    return AccessCode
+      .remove({
+        requester: accessCode.requester,
+        publication: accessCode.publication
+      })
+      .then(() => {
+        return AccessCode.create(accessCode);
+      })
+      .then((doc) => {
+        const data = Object.assign(
+          {
+            code: doc.code
+          },
+          event
+        );
+        return emailService.sendDownloadLinkRequestEmail(data);
+      });
   });
 
   eventBus.on(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_APPROVED, function (event) {
-    emailService.sendDownloadLinkRequestApprovedEmail(event);
+    return AccessCode
+      .findOne({
+        requester: event.username,
+        publication: event.publication._id
+      })
+      .then((doc) => {
+        const data = Object.assign({code: doc.code, event});
+        return emailService.sendDownloadLinkRequestApprovedEmail(data);
+      });
   });
 
   eventBus.on(eventBus.EVENTS.DOWNLOAD_LINK_REQUEST_REJECTED, function (event) {
-    emailService.sendDownloadLinkRequestRejectedEmail(event);
+    return AccessCode
+      .remove({
+        requester: event.username,
+        publication: event.publication._id
+      })
+      .then(() => {
+        return emailService.sendDownloadLinkRequestRejectedEmail(event);
+      });
   });
 
 };
