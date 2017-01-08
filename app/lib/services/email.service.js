@@ -21,7 +21,7 @@ const resetEmailOptions = {
 };
 
 const credentialsRequestOptions = {
-  subject: 'User requests credentials',
+  subject: 'Новий запит на реєстрацію',
   to: config.adminMail
 };
 
@@ -128,7 +128,7 @@ class EmailService {
       username: event.username,
       firstName: event.firstName,
       lastName: event.lastName,
-      url: '' /* TODO add URL here*/
+      url: '' /* TODO add URL to approval in admin panel here*/
     };
 
     return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);
@@ -137,7 +137,7 @@ class EmailService {
   sendDownloadLinkRequestApprovedEmail(event) {
     const templateData = {
       appName: config.productName,
-      url: '' /* TODO add URL here*/
+      url: event.publication.downloadLink
     };
 
     const options = _.extend({

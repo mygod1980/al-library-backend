@@ -1,17 +1,18 @@
 'use strict';
-
+const _ = require('lodash');
+const config = require('config/config');
 const modelName = 'Publication';
 
 module.exports = function (mongoose) {
   const schema = new mongoose.Schema({
-    author: [{
+    authors: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Author',
       required: true
     }],
-    tags: [{
-      type: String,
-      'enum': [/*TODO: add tags here like categories keys*/]
+    categories: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category'
     }],
     title: {
       type: String,

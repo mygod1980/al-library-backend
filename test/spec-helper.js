@@ -13,11 +13,17 @@ const config = require('config/config');
 const testConfig = require('test/config');
 
 const User = mongoose.model('User');
+const Category = mongoose.model('Category');
+const Request = mongoose.model('Request');
+const Publication = mongoose.model('Publication');
+const Author = mongoose.model('Author');
 const RefreshToken = mongoose.model('RefreshToken');
 
 const FIXTURE_TYPES = {
   USER: 'user.data',
-  USER_SN: 'user-sn.data'
+  USER_SN: 'user-sn.data',
+  AUTHOR: 'author.data',
+  PUBLICATION: 'publication.data'
 };
 
 const clientAuth = {
@@ -112,6 +118,38 @@ const specHelper = {
       });
   },
 
+  createAuthor(data, accessToken) {
+    return this
+      .post(`${testConfig.baseUrl}/api/authors`, data,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
+      .then((result) => {
+        data._id = result.body._id;
+        return result.body;
+      });
+  },
+
+  createPublication (data, accessToken) {
+    return this
+      .post(`${testConfig.baseUrl}/api/publications`, data,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        })
+      .then((result) => {
+        data._id = result.body._id;
+        return result.body;
+      });
+  },
+
+  createCategory (/*data, accessToken*/) {
+    return Category.create({name: `testing-category-${Math.floor(Math.random() * 100000)}`});
+  },
+
   signInUser(data) {
     return this
       .post(`${testConfig.baseUrl}/oauth`,
@@ -163,6 +201,33 @@ const specHelper = {
       .try(() => {
         if (data._id) {
           return User.remove({_id: data._id});
+        }
+      });
+  },
+
+  removeRequest(data) {
+    return Bb
+      .try(() => {
+        if (data._id) {
+          return Request.remove({_id: data._id});
+        }
+      });
+  },
+
+  removeAuthor(data) {
+    return Bb
+      .try(() => {
+        if (data._id) {
+          return Author.remove({_id: data._id});
+        }
+      });
+  },
+
+  removePublication(data) {
+    return Bb
+      .try(() => {
+        if (data._id) {
+          return Publication.remove({_id: data._id});
         }
       });
   },

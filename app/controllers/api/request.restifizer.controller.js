@@ -11,7 +11,7 @@ const mongoose = require('config/mongoose');
 const config = require('config/config');
 const BaseController = require('app/lib/base.restifizer.controller');
 const eventBus = require('config/event-bus');
-
+const ObjectId = mongoose.Schema.Types.ObjectId;
 const Request = mongoose.model('Request');
 
 /**
@@ -160,6 +160,10 @@ class RequestController extends BaseController {
       requiredFields.map((field) => {
         if (!model.extra[field]) {
           return missingFields.push(field);
+        }
+
+        if (field === 'publicationId' && !ObjectId.isValid(model.extra[field])) {
+          return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Cast to ObjectId failed'));
         }
 
         return field;
