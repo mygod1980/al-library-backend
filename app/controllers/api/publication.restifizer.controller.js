@@ -147,6 +147,13 @@ class PublicationController extends BaseController {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
+
+  post(model, scope) {
+    model.downloadUrl = `${scope.req.protocol}://${scope.req.get('host')}`+
+      `/api/publications/${model._id}/getFile`;
+
+    return model;
+  }
 }
 
 module.exports = PublicationController;

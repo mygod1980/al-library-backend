@@ -73,7 +73,7 @@ function restifizer(restifizerController) {
             }
 
             extra.publication = publication;
-            extra.downloadLink = `${scope.req.protocol }://${scope.req.get('host')}`+
+            extra.downloadLink = `${scope.req.protocol}://${scope.req.get('host')}`+
               `/api/publications/${publication._id}/download`;
           }
           eventBus.emit(eventName, extra);
