@@ -1,16 +1,26 @@
 /**
  * Created by eugenia on 08.01.17.
  */
+const fs = require('fs');
 const Bb = require('bluebird');
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 const s3Config = require('config/config').s3;
-const awsConfig = new AWS.Config({
-  accessKeyId: s3Config.key, region: s3Config.region
+
+AWS.config.update({
+  accessKeyId: s3Config.key,
+  secretAccessKey: s3Config.secret,
+  region: s3Config.region
 });
+const s3 = new AWS.S3();
 
 class S3Service {
   static upload({data, key}) {
+
+    if (!Buffer.isBuffer(data)) {
+      /* we're dealing with file */
+      data = fs.createReadStream(data.path);
+    }
+
     const params = {
       Bucket: s3Config.bucket,
       ACL: 'private',
@@ -42,6 +52,7 @@ class S3Service {
       .then((response) => {
         return response;
       });
+
   }
 }
 

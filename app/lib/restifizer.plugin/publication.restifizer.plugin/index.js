@@ -18,14 +18,7 @@ function restifizer(restifizerController) {
     method: 'post',
     path: ':_id/upload',
     handler: function upload(scope) {
-      const body = scope.getBody();
-      let file;
-
-      if (config.isTest) {
-        file = body.files.file;
-      } else {
-        file = body.file;
-      }
+      const {file} = scope.getBody();
 
       if (!file) {
         return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('File is missing'));
@@ -39,7 +32,10 @@ function restifizer(restifizerController) {
       return this
         .locateModel(scope)
         .then((doc) => {
-          return S3Service.upload({data: file, key: doc._id});
+          return S3Service.upload({data: file, key: doc._id.toString()});
+        })
+        .catch((err) => {
+          return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
         });
     }
   }, 'upload');
@@ -81,12 +77,12 @@ function restifizer(restifizerController) {
     auth: [BaseController.AUTH.BEARER],
     method: 'get',
     path: ':_id/getFile',
-    handler: function download(scope) {
+    handler: function getFile(scope) {
 
       return this
         .locateModel(scope)
         .then((doc) => {
-          return S3Service.download(doc._id);
+          return S3Service.download(doc._id.toString());
         });
     }
   }, 'getFile');

@@ -6,7 +6,6 @@ module.exports = (seed) => {
     title: `Fake Publication ${seed}`,
     publishedAt: new Date().getFullYear(),
     description: `fake description ${seed}`,
-    imageUrl: `fake-url${seed}fake.com`,
-    downloadUrl: `fake-url${seed}fake.com`
+    imageUrl: `fake-url${seed}fake.com`
   };
 };

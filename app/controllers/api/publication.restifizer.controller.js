@@ -11,6 +11,7 @@ const HTTP_STATUSES = require('http-statuses');
 const mongoose = require('config/mongoose');
 const config = require('config/config');
 const BaseController = require('app/lib/base.restifizer.controller');
+const publicationPlugin = require('app/lib/restifizer.plugin/publication.restifizer.plugin');
 
 const Publication = mongoose.model('Publication');
 
@@ -119,7 +120,7 @@ class PublicationController extends BaseController {
       fields: [
         'title',
         {
-          name: 'author',
+          name: 'authors',
           fields: ['firstName', 'lastName', 'secondName', 'description']
         },
         'imageUrl',
@@ -127,14 +128,20 @@ class PublicationController extends BaseController {
         'description',
         'categories',
         'createdAt',
-        'updatedAt'
+        'updatedAt',
+        'downloadUrl'
       ],
       readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
         })
-      }
+      },
+      plugins: [
+        {
+          plugin: publicationPlugin.restifizer
+        }
+      ]
     });
 
     super(options);
