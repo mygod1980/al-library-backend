@@ -19,7 +19,7 @@ const Publication = mongoose.model('Publication');
  * @apiParam {String} title title publication title
  * @apiParam {String} author author publication author _id
  * @apiParam {String} description description publication description
- * @apiParam {Array} tags tags categories publication is tagged with
+ * @apiParam {Array} categories categories categories publication is tagged with
  * @apiParam {String} downloadLink downloadLink link to digital copy of publication
  * @apiParam {Number} publishedAt publishedAt publication date
  *
@@ -35,7 +35,7 @@ const Publication = mongoose.model('Publication');
  * @apiSuccess {String} [author.secondName] secondName
  * @apiSuccess {String} [author.lastName] lastName
  * @apiSuccess {String} [author.description] description
- * @apiSuccess {Array} tags tags categories publication is tagged with
+ * @apiSuccess {Array} categories categories categories publication is tagged with
  * @apiSuccess {String} downloadLink downloadLink link to digital copy of publication
  * @apiSuccess {String(ISODate)} createdAt
  * @apiSuccess {String(ISODate)} updatedAt
@@ -125,7 +125,7 @@ class PublicationController extends BaseController {
         'imageUrl',
         'publishedAt',
         'description',
-        'tags',
+        'categories',
         'downloadLink',
         'createdAt',
         'updatedAt'
@@ -143,14 +143,13 @@ class PublicationController extends BaseController {
 
 
   pre(scope) {
-    const user = scope.getUser();
 
     if (!scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
 
-  // TODO: create unauthenticated route for unauthenticated publications
+  // TODO: create unauthenticated route for unauthenticated users
 
 
 }
