@@ -246,7 +246,10 @@ before(() => {
   return Bb
     .join(
       User.remove({username: {$ne: config.defaultUser.username}}),
-      RefreshToken.remove({})
+      RefreshToken.remove({}),
+      Request.remove({}),
+      Author.remove({}),
+      Publication.remove({})
     );
 
 });
