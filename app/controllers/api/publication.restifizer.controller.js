@@ -32,7 +32,6 @@ const Publication = mongoose.model('Publication');
  * @apiSuccess {String} description description publication description
  * @apiSuccess {String} publishedAt publishedAt publication date
  * @apiSuccess {Array} [authors] publication authors
- * @apiSuccess {Object} [author] publication author
  * @apiSuccess {String} [author.firstName] firstName
  * @apiSuccess {String} [author.secondName] secondName
  * @apiSuccess {String} [author.lastName] lastName
