@@ -11,7 +11,18 @@ const Publication = require('config/mongoose').model('Publication');
 const eventBus = require('config/event-bus');
 
 function restifizer(restifizerController) {
-
+  /**
+   * @apiGroup Request
+   * @apiName ChangeRequestStatus
+   * @api {post} /api/requests/:_id/:action Change request state
+   * @apiDescription Changes request status from pending to approved or rejected. Returns updated request document
+   * @apiPermission bearer, admin
+   *
+   * @apiParam {String} _id _id of request
+   * @apiParam {String} action action name, one of ['approve', 'reject']
+   *
+   * @apiUse BearerAuthHeader
+   */
   restifizerController.actions.changeStatus = restifizerController.normalizeAction({
     auth: [BaseController.AUTH.BEARER],
     method: 'post',
