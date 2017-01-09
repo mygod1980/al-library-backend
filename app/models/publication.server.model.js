@@ -21,8 +21,8 @@ module.exports = function (mongoose) {
     },
     imageUrl: {
       type: String
-      // add isUrl validation
-      // TODO: link to s3 or any other storage
+      /* add isUrl validation
+       TODO: link to s3 or any other storage*/
     },
     description: {
       type: String,
@@ -30,6 +30,11 @@ module.exports = function (mongoose) {
     },
     publishedAt: {
       type: Number
+    },
+    /* it is set only after we've uploaded file to s3 */
+    downloadUrl: {
+      type: String,
+      unique: true
     }
   }, {timestamps: true});
 

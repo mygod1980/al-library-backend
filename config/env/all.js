@@ -72,10 +72,10 @@ module.exports = {
     }
   },
   s3: {
-    key: process.env.S3_KEY || 'AKIAJXJVIES2BWSAJEJA',
+    key: process.env.S3_KEY || 'AKIAJXC2Y2L36WCQXFFA',
     bucket: process.env.S3_BUCKET || 'al.donnu.publications',
     region: 'us-west-2',
-    secret: process.env.S3_SECRET || 'XnDe02zfZRwCb9GySOQwr0i8QLJ5AgWUxIInFRkf',
+    secret: process.env.S3_SECRET || '/C4b2bt5hMnlODLLGAh+tFU+Ijc0h2mWyPXS9K65',
     domain: process.env.S3_DOMAIN || '',
     emulation: process.env.S3_EMULATION || false,
     publishLifetime: process.env.S3_PUBLISH_LIFETIME || 3600

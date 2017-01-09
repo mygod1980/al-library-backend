@@ -99,6 +99,27 @@ describe('Publication', () => {
     });
   });
 
+  describe('Upload to s3 by user', () => {
+
+    let response;
+
+    before('send request', () => {
+      return chakram
+        .post(`${baseUrl}/${publication._id}/upload`, {
+          file: fs.createReadStream('test/data/files/publication.pdf')
+        }, {
+          headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
+        })
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
+    });
+  });
+
   describe('Get file from s3', () => {
 
     let response;
@@ -116,8 +137,11 @@ describe('Publication', () => {
       expect(response).to.have.status(200);
     });
 
-    it('should return file', () => {
-      expect(response).to.exist;
+    it('should have attachment', () => {
+      return expect(response).to.have.header(
+        'content-disposition',
+        `attachment; filename=${publication._id}.pdf`
+      );
     });
   });
 
@@ -142,6 +166,14 @@ describe('Publication', () => {
       expect(response).to.have.status(200);
     });
 
+    it('should return an array', () => {
+      expect(response.body).to.be.instanceOf(Array);
+    });
+
+    it('should return 1 publication', () => {
+      expect(response.body.length).to.be.equal(1);
+    });
+
   });
 
   describe('Get List by user', () => {
@@ -161,8 +193,42 @@ describe('Publication', () => {
         });
     });
 
-    it('should return status 403', () => {
-      expect(response).to.have.status(403);
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('should return an array', () => {
+      expect(response.body).to.be.instanceOf(Array);
+    });
+
+    it('should return 1 publication', () => {
+      expect(response.body.length).to.be.equal(1);
+    });
+
+  });
+
+  describe('Get List by unauthenticated user', () => {
+
+    let response;
+
+    before('send request', () => {
+      return chakram
+        .get(baseUrl)
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('should return an array', () => {
+      expect(response.body).to.be.instanceOf(Array);
+    });
+
+    it('should return 1 publication', () => {
+      expect(response.body.length).to.be.equal(1);
     });
 
   });
@@ -217,8 +283,13 @@ describe('Publication', () => {
         });
     });
 
-    it('should return status 404', () => {
-      expect(response).to.have.status(404);
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+      Object.assign(publication, response.body);
+    });
+
+    it('should have changed the title', () => {
+      expect(publication.title).to.be.equal(NEW_TITLE);
     });
   });
 
@@ -246,8 +317,8 @@ describe('Publication', () => {
         });
     });
 
-    it('should return status 404', () => {
-      expect(response).to.have.status(404);
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
     });
   });
 

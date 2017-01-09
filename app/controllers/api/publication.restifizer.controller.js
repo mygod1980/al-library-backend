@@ -18,7 +18,7 @@ const Publication = mongoose.model('Publication');
 /**
  * @apiDefine PublicationRequest
  * @apiParam {String} title title publication title
- * @apiParam {String} author author publication author _id
+ * @apiParam {Array} authors authors publication author _id
  * @apiParam {String} description description publication description
  * @apiParam {Array} categories categories categories publication is tagged with
  * @apiParam {String} downloadLink downloadLink link to digital copy of publication
@@ -31,6 +31,7 @@ const Publication = mongoose.model('Publication');
  * @apiSuccess {String} title title publication title
  * @apiSuccess {String} description description publication description
  * @apiSuccess {String} publishedAt publishedAt publication date
+ * @apiSuccess {Array} [authors] publication authors
  * @apiSuccess {Object} [author] publication author
  * @apiSuccess {String} [author.firstName] firstName
  * @apiSuccess {String} [author.secondName] secondName
@@ -135,6 +136,9 @@ class PublicationController extends BaseController {
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
+        }),
+        'select': BaseController.createAction({
+          auth: false
         })
       },
       plugins: [

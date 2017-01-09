@@ -105,7 +105,8 @@ class BaseController extends Restifizer.Controller {
       };
 
       result.isAdmin = function () {
-        return this.getUser().role === config.roles.ADMIN;
+        const user = this.getUser();
+        return user && user.role === config.roles.ADMIN;
       };
 
     } else if (transport.transportName === 'socket.io') {
@@ -126,7 +127,8 @@ class BaseController extends Restifizer.Controller {
       };
 
       result.isAdmin = function () {
-        return this.getUser().role === config.roles.ADMIN;
+        const user = this.getUser();
+        return user && user.role === config.roles.ADMIN;
       };
 
     } else {

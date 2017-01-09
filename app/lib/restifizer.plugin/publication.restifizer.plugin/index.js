@@ -66,6 +66,9 @@ function restifizer(restifizerController) {
           }
 
           return S3Service.download({data: file, key: doc.publication});
+        })
+        .catch((err) => {
+          return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
         });
     }
   }, 'download');
@@ -78,11 +81,21 @@ function restifizer(restifizerController) {
     method: 'get',
     path: ':_id/getFile',
     handler: function getFile(scope) {
-
+      const {_id} = scope.getParams();
       return this
         .locateModel(scope)
         .then((doc) => {
           return S3Service.download(doc._id.toString());
+        })
+        .then(({file, contentType}) => {
+          /* TODO: set extension depending on type */
+          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.pdf`);
+          scope.res.setHeader('Content-type', contentType);
+          scope.encoding = 'binary';
+          return file;
+        })
+        .catch((err) => {
+          return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
         });
     }
   }, 'getFile');

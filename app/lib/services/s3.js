@@ -6,12 +6,9 @@ const Bb = require('bluebird');
 const AWS = require('aws-sdk');
 const s3Config = require('config/config').s3;
 
-AWS.config.update({
-  accessKeyId: s3Config.key,
+const s3 = new AWS.S3({accessKeyId: s3Config.key,
   secretAccessKey: s3Config.secret,
-  region: s3Config.region
-});
-const s3 = new AWS.S3();
+  region: s3Config.region});
 
 class S3Service {
   static upload({data, key}) {
@@ -50,9 +47,16 @@ class S3Service {
         return s3.getObject(params, callback);
       })
       .then((response) => {
-        return response;
+        return {file: response.Body, contentType: response.ContentType};
       });
 
+  }
+
+  static removeObject(key) {
+    return Bb
+      .fromCallback((callback) => {
+        return s3.removeObject(key, callback);
+      });
   }
 }
 
