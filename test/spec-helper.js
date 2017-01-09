@@ -151,6 +151,28 @@ const specHelper = {
     return Category.create({name: `testing-category-${Math.floor(Math.random() * 100000)}`});
   },
 
+  createRequest(request) {
+    return this
+      .post(`${testConfig.baseUrl}/api/requests`, Object.assign(request, this.getClientAuth()))
+      .then((result) => {
+        Object.assign(request, result.body);
+        return request;
+      });
+  },
+
+  approveRequest(_id, accessToken) {
+    return this
+      .post(`${testConfig.baseUrl}/api/requests/${_id}/approve`, {},
+        {headers: {'Authorization': `Bearer ${accessToken}`}})
+      .then((result) => {
+        return result.body;
+      });
+  },
+
+  getAccessCode(username, publicationId) {
+    return AccessCode.findOne({requester: username, publication: publicationId});
+  },
+
   signInUser(data) {
     return this
       .post(`${testConfig.baseUrl}/oauth`,

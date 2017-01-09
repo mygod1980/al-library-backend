@@ -12,15 +12,20 @@ const specHelper = require('test/spec-helper');
 
 const AccessCode = mongoose.model('AccessCode');
 const Publication = mongoose.model('Publication');
+const Request = mongoose.model('Request');
 const expect = chakram.expect;
 
-describe('Publication', () => {
+describe('Publication File', () => {
 
   const baseUrl = `${testConfig.baseUrl}/api/publications`;
   const adminUser = specHelper.getAdminUser();
   const user = specHelper.getFixture(specHelper.FIXTURE_TYPES.USER);
   const author = specHelper.getFixture(specHelper.FIXTURE_TYPES.AUTHOR);
   const publication = specHelper.getFixture(specHelper.FIXTURE_TYPES.PUBLICATION);
+  const downloadLinkRequest = {
+    type: Request.TYPES.DOWNLOAD_LINK,
+    username: 'test@test.com'
+  };
 
   before('sign in admin', () => {
     return specHelper.signInUser(adminUser);
@@ -54,6 +59,9 @@ describe('Publication', () => {
     it('should return status 201', () => {
       expect(response).to.have.status(201);
       Object.assign(publication, response.body);
+      downloadLinkRequest.extra = {
+        publicationId: publication._id
+      };
     });
   });
 
@@ -74,108 +82,17 @@ describe('Publication', () => {
     });
   });
 
-  describe('Get List by user', () => {
+  describe('Upload to s3 by admin', () => {
 
     let response;
 
     before('send request', () => {
       return chakram
-        .get(`${baseUrl}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
-            }
-          })
-        .then((result) => {
-          response = result;
-        });
-    });
-
-    it('should return status 200', () => {
-      expect(response).to.have.status(200);
-    });
-
-    it('should return an array', () => {
-      expect(response.body).to.be.instanceOf(Array);
-    });
-
-    it('should return 1 publication', () => {
-      expect(response.body.length).to.be.equal(1);
-    });
-
-  });
-
-  describe('Get List by unauthenticated user', () => {
-
-    let response;
-
-    before('send request', () => {
-      return chakram
-        .get(baseUrl)
-        .then((result) => {
-          response = result;
-        });
-    });
-
-    it('should return status 200', () => {
-      expect(response).to.have.status(200);
-    });
-
-    it('should return an array', () => {
-      expect(response.body).to.be.instanceOf(Array);
-    });
-
-    it('should return 1 publication', () => {
-      expect(response.body.length).to.be.equal(1);
-    });
-
-  });
-
-  describe('Get one by admin', () => {
-
-    let response;
-
-    before('send request', () => {
-      return chakram
-        .get(`${baseUrl}/${publication._id}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${adminUser.auth['access_token']}`
-            }
-          })
-        .then((result) => {
-          response = result;
-        });
-    });
-
-    it('should return status 200', () => {
-      expect(response).to.have.status(200);
-    });
-
-    it('should be the same _id', () => {
-      expect(response).to.have.json('_id', publication._id);
-    });
-  });
-
-  describe('Change by admin', () => {
-
-    const NEW_TITLE = 'new-title';
-
-    let response;
-
-    before('send request', () => {
-
-      return chakram
-        .patch(`${baseUrl}/${publication._id}`,
-          {
-            title: NEW_TITLE
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${adminUser.auth['access_token']}`
-            }
-          }
-        )
+        .post(`${baseUrl}/${publication._id}/upload`, {
+          file: fs.createReadStream('test/data/files/publication.pdf')
+        }, {
+          headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}
+        })
         .then((result) => {
           response = result;
         });
@@ -186,30 +103,22 @@ describe('Publication', () => {
       Object.assign(publication, response.body);
     });
 
-    it('should have changed the title', () => {
-      expect(publication.title).to.be.equal(NEW_TITLE);
+    it('should return downloadUrl', () => {
+      expect(publication.downloadUrl).to.exist;
     });
   });
 
-  describe('Change by user', () => {
-
-    const NEW_TITLE = 'new-title';
+  describe('Upload to s3 by user', () => {
 
     let response;
 
     before('send request', () => {
-
       return chakram
-        .patch(`${baseUrl}/${publication._id}`,
-          {
-            title: NEW_TITLE
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
-            }
-          }
-        )
+        .post(`${baseUrl}/${publication._id}/upload`, {
+          file: fs.createReadStream('test/data/files/publication.pdf')
+        }, {
+          headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
+        })
         .then((result) => {
           response = result;
         });
@@ -220,21 +129,102 @@ describe('Publication', () => {
     });
   });
 
-  describe('Remove by user', () => {
+  describe('Get file from s3', () => {
 
     let response;
-
     before('send request', () => {
+      return chakram
+        .get(`${baseUrl}/${publication._id}/getFile`, {
+          headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
+        })
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('should have attachment', () => {
+      return expect(response).to.have.header(
+        'content-disposition',
+        `attachment; filename=${publication._id}.pdf`
+      );
+    });
+  });
+
+  describe('Get requested file with valid access code', () => {
+    let response;
+    let accessCode;
+
+    before('create request', () => {
+      return specHelper.createRequest(downloadLinkRequest);
+    });
+
+    before('approve request', () => {
+      return specHelper.approveRequest(downloadLinkRequest._id, adminUser.auth['access_token']);
+    });
+
+    before('clear emails', () => {
+      return specHelper.fetchAndClearSentEmails();
+    });
+
+    before('get access code', () => {
+      return specHelper
+        .getAccessCode(downloadLinkRequest.username, publication._id)
+        .then((code) => {
+          accessCode = code;
+        });
+    });
+
+    before('get file', () => {
+      const encodedUsername = encodeURIComponent(accessCode.requester);
+      const encodedCode = encodeURIComponent(accessCode.code);
 
       return chakram
-        .delete(`${baseUrl}/${publication._id}`,
-          {},
-          {
-            headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
-            }
-          }
-        )
+        .get(`${baseUrl}/${accessCode.publication.toString()}/download/${encodedUsername}/${encodedCode}`)
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('should have attachment', () => {
+      return expect(response).to.have.header(
+        'content-disposition',
+        `attachment; filename=${publication._id}.pdf`
+      );
+    });
+
+  });
+
+  describe('Get requested file with invalid access code', () => {
+    let response;
+
+    before('get file', () => {
+      return chakram
+        .get(`${baseUrl}/${publication._id}/download/fakeusername/fakecode`)
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 400', () => {
+      expect(response).to.have.status(400);
+    });
+  });
+
+  describe('Remove file by user', () => {
+    let response;
+    before('send request', () => {
+      return chakram
+        .post(`${baseUrl}/${publication._id}/removeFile`, {}, {
+          headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
+        })
         .then((result) => {
           response = result;
         });
@@ -245,28 +235,26 @@ describe('Publication', () => {
     });
   });
 
-  describe('Remove by admin', () => {
-
+  describe('Remove file by admin', () => {
     let response;
-
+    let downloadUrl;
     before('send request', () => {
-
       return chakram
-        .delete(`${baseUrl}/${publication._id}`,
-          {},
-          {
-            headers: {
-              'Authorization': `Bearer ${adminUser.auth['access_token']}`
-            }
-          }
-        )
+        .post(`${baseUrl}/${publication._id}/removeFile`, {}, {
+          headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}
+        })
         .then((result) => {
           response = result;
         });
     });
 
-    it('should return status 204', () => {
-      expect(response).to.have.status(204);
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+      downloadUrl = response.body.downloadUrl;
+    });
+
+    it('should have removed downloadUrl', () => {
+      expect(downloadUrl).to.be.undefined;
     });
   });
 
@@ -281,4 +269,9 @@ describe('Publication', () => {
   after('remove publication', () => {
     return specHelper.removePublication(publication);
   });
+
+  after('remove request', () => {
+    return specHelper.removeRequest(downloadLinkRequest);
+  });
+
 });

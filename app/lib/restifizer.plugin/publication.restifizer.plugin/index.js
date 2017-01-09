@@ -56,10 +56,14 @@ function restifizer(restifizerController) {
     method: 'get',
     path: ':_id/download/:requester/:code',
     handler: function download(scope) {
-      const {requester, code} = scope.getParams();
+      const params = scope.getParams();
+      const {requester, code, _id} = params;
       if (!code || !requester) {
         return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Code and requester are required'));
       }
+
+      delete params.requester;
+      delete params.code;
 
       return this
         .locateModel(scope)
@@ -71,7 +75,7 @@ function restifizer(restifizerController) {
             return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Access to resource cannot be established'));
           }
 
-          return S3Service.download({data: file, key: doc.publication});
+          return S3Service.download(doc.publication.toString());
         })
         .then(({file, contentType}) => {
           /* TODO: set extension depending on type */
