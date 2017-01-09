@@ -53,9 +53,13 @@ class S3Service {
   }
 
   static removeObject(key) {
+    const params = {
+      Bucket: s3Config.bucket,
+      Key: key
+    };
     return Bb
       .fromCallback((callback) => {
-        return s3.removeObject(key, callback);
+        return s3.deleteObject(params, callback);
       });
   }
 }

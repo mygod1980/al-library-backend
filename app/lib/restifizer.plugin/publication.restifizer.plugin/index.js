@@ -29,10 +29,16 @@ function restifizer(restifizerController) {
         return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError(`Only admins can upload publications`));
       }
 
+      const context = {};
       return this
         .locateModel(scope)
         .then((doc) => {
+          context.doc = doc;
           return S3Service.upload({data: file, key: doc._id.toString()});
+        })
+        .then((data) => {
+          context.doc.set('downloadUrl', data.Location);
+          return context.doc.save();
         })
         .catch((err) => {
           return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
@@ -67,6 +73,13 @@ function restifizer(restifizerController) {
 
           return S3Service.download({data: file, key: doc.publication});
         })
+        .then(({file, contentType}) => {
+          /* TODO: set extension depending on type */
+          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.pdf`);
+          scope.res.setHeader('Content-type', contentType);
+          scope.encoding = 'binary';
+          return file;
+        })
         .catch((err) => {
           return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
         });
@@ -99,6 +112,39 @@ function restifizer(restifizerController) {
         });
     }
   }, 'getFile');
+
+  restifizerController.actions.removeFile = restifizerController.normalizeAction({
+    auth: [BaseController.AUTH.BEARER],
+    method: 'post',
+    path: ':_id/removeFile',
+    handler: function removeFile(scope) {
+
+      if (!scope.isAdmin()) {
+        /* TODO: check if is student*/
+        return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError(`Only admins can remove publications files`));
+      }
+
+      const context = {};
+      return this
+        .locateModel(scope)
+        .then((doc) => {
+          context.doc = doc;
+          return S3Service.removeObject(doc._id.toString());
+        })
+        .then(() => {
+          return Publication.update({ _id: context.doc._id }, { $unset: { downloadUrl: 1 }});
+        })
+        .then(() => {
+          const doc = context.doc.toObject();
+          delete doc.downloadUrl;
+          return doc;
+        })
+        .catch((err) => {
+          return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError(err.message));
+        });
+    }
+  }, 'removeFile');
+
 }
 
 module.exports.restifizer = restifizer;

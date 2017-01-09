@@ -55,10 +55,6 @@ describe('Publication', () => {
       expect(response).to.have.status(201);
       Object.assign(publication, response.body);
     });
-
-    it('should return downloadUrl', () => {
-      expect(publication.downloadUrl).to.be.equal(`${baseUrl}/${publication._id}/getFile`);
-    });
   });
 
   describe('Create publication by user', () => {
@@ -96,6 +92,11 @@ describe('Publication', () => {
 
     it('should return status 200', () => {
       expect(response).to.have.status(200);
+      Object.assign(publication, response.body);
+    });
+
+    it('should return downloadUrl', () => {
+      expect(publication.downloadUrl).to.exist;
     });
   });
 
@@ -319,6 +320,29 @@ describe('Publication', () => {
 
     it('should return status 403', () => {
       expect(response).to.have.status(403);
+    });
+  });
+
+  describe('Remove file by admin', () => {
+    let response;
+    let downloadUrl;
+    before('send request', () => {
+      return chakram
+        .post(`${baseUrl}/${publication._id}/removeFile`, {}, {
+          headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}
+        })
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
+      downloadUrl = response.body.downloadUrl;
+    });
+
+    it('should have removed downloadUrl', () => {
+      expect(downloadUrl).to.be.undefined;
     });
   });
 

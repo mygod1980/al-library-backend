@@ -160,8 +160,10 @@ class PublicationController extends BaseController {
   }
 
   post(model, scope) {
-    model.downloadUrl = `${scope.req.protocol}://${scope.req.get('host')}`+
-      `/api/publications/${model._id}/getFile`;
+    if (model.downloadUrl) {
+      model.downloadUrl = `${scope.req.protocol}://${scope.req.get('host')}`+
+        `/api/publications/${model._id}/getFile`;
+    }
 
     return model;
   }
