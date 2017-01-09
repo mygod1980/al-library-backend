@@ -57,7 +57,6 @@ module.exports = {
   adminMail: process.env.ADMIN_MAIL,
   roles: {
     USER: 'user',
-    STUDENT: 'student',
     ADMIN: 'admin'
   },
   request: {
