@@ -17,6 +17,7 @@ const Category = mongoose.model('Category');
 const Request = mongoose.model('Request');
 const Publication = mongoose.model('Publication');
 const Author = mongoose.model('Author');
+const AccessCode = mongoose.model('AccessCode');
 const RefreshToken = mongoose.model('RefreshToken');
 
 const FIXTURE_TYPES = {
@@ -249,6 +250,7 @@ before(() => {
       RefreshToken.remove({}),
       Request.remove({}),
       Author.remove({}),
+      AccessCode.remove({}),
       Publication.remove({})
     );
 

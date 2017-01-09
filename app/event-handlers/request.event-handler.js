@@ -24,13 +24,13 @@ module.exports = (eventBus) => {
     const accessCode = {
       code: crypto.randomBytes(32).toString('base64'),
       requester: event.username,
-      publication: event.publication._id
+      publication: event.publicationId
     };
 
     return AccessCode
       .remove({
         requester: accessCode.requester,
-        publication: accessCode.publication
+        publication: accessCode.publicationId
       })
       .then(() => {
         return AccessCode.create(accessCode);
@@ -53,7 +53,7 @@ module.exports = (eventBus) => {
         publication: event.publication._id
       })
       .then((doc) => {
-        const data = Object.assign({code: doc.code, event});
+        const data = Object.assign({code: doc.code}, event);
         return emailService.sendDownloadLinkRequestApprovedEmail(data);
       });
   });
