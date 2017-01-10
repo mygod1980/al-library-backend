@@ -10,7 +10,7 @@ module.exports = {
     title: appTitle
   },
 
-  productName: 'PROмова',
+  productName: 'PROmova',
 
   security: {
     tokenLife: 3600,
