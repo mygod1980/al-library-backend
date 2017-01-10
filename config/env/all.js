@@ -14,7 +14,8 @@ module.exports = {
 
   security: {
     tokenLife: 3600,
-    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature'
+    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature',
+    accessCodeTtl: process.env.ACCESS_CODE_TTL || 60 * 60 * 24 * 7 // one week
   },
 
   redis: {
