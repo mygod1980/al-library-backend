@@ -73,11 +73,13 @@ class AuthDelegate {
    */
   findUserByToken(context) {
 
+    const accessToken = context.accessToken;
+    const refreshToken = context.req.body['refresh_token'];
     return Bb.try(() => {
-      if (context.accessToken) {
-        return context.accessToken;
-      } else if (context.refreshToken) {
-        return RefreshToken.findOne({token: context.refreshToken});
+      if (accessToken) {
+        return accessToken;
+      } else if (refreshToken) {
+        return RefreshToken.findOne({token: refreshToken});
       } else {
         throw new Error('Wrong context!');
       }
