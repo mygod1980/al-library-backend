@@ -4,7 +4,6 @@
 
 'use strict';
 
-const _ = require('lodash');
 const Bb = require('bluebird');
 
 const HTTP_STATUSES = require('http-statuses');
