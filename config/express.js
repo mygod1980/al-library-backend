@@ -61,7 +61,8 @@ module.exports = function () {
 
   require('app/lib/middleware/helmet')(app);
 
-  require('app/lib/middleware/socket-io')(app);
+  // uncomment later if we need it
+  // require('app/lib/middleware/socket-io')(app);
 
   require('app/lib/middleware/restifizer')(app, log, 'app/controllers/api/**/*.js');
 
