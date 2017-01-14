@@ -6,14 +6,16 @@ module.exports = function (mongoose) {
   const schema = new mongoose.Schema({
     firstName: {
       type: String,
+      trim: true,
       required: true
     },
     secondName: {
+      trim: true,
       type: String
     },
     lastName: {
+      trim: true,
       type: String,
-      unique: true,
       required: true
     },
     description: String

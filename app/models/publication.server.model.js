@@ -17,6 +17,7 @@ module.exports = function (mongoose) {
     title: {
       type: String,
       unique: true,
+      trim: true,
       required: true
     },
     imageUrl: {
@@ -27,6 +28,7 @@ module.exports = function (mongoose) {
     },
     description: {
       type: String,
+      trim: true,
       required: true
     },
     publishedAt: {

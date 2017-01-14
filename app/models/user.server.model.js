@@ -6,8 +6,16 @@ const modelName = 'User';
 
 module.exports = function (mongoose) {
   const schema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
+    firstName: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true
+    },
     role: {
       type: String,
       'enum': _.values(config.roles),

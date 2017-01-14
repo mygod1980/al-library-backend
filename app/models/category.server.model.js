@@ -6,9 +6,13 @@ module.exports = function (mongoose) {
     name: {
       type: String,
       unique: true,
+      trim: true,
       required: true
     },
-    description: String
+    description: {
+      type: String,
+      trim: true
+    }
   }, {timestamps: true});
 
   return mongoose.model(modelName, schema);
