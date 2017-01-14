@@ -28,7 +28,7 @@ module.exports = function () {
     log.info('Bootstrap script completed');
 
     // Start the app by listening on <port>
-    app.http.listen(config.port);
+    app./*http.*/listen(config.port);
 
     // Logging initialization
     log.info(`"${config.app.title}" application started on port ${config.port}`);
