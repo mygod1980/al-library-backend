@@ -103,6 +103,7 @@ class CategoryController extends BaseController {
       path: '/api/categories',
       fields: [
         'name',
+        'description',
         'createdAt',
         'updatedAt'
       ],
