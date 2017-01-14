@@ -1,6 +1,6 @@
 'use strict';
 
-const appTitle = 'al-library-backend-backend';
+const appTitle = 'al-library-backend';
 
 module.exports = {
   port: process.env.PORT || 1340,
@@ -10,11 +10,12 @@ module.exports = {
     title: appTitle
   },
 
-  productName: 'PROмова',
+  productName: 'PROmova',
 
   security: {
     tokenLife: 3600,
-    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature'
+    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature',
+    accessCodeTtl: process.env.ACCESS_CODE_TTL || 60 * 60 * 24 * 7 // one week
   },
 
   redis: {
@@ -57,7 +58,6 @@ module.exports = {
   adminMail: process.env.ADMIN_MAIL,
   roles: {
     USER: 'user',
-    STUDENT: 'student',
     ADMIN: 'admin'
   },
   request: {
@@ -70,5 +70,14 @@ module.exports = {
       APPROVED: 'approved',
       REJECTED: 'rejected'
     }
-  }
+  },
+  s3: {
+    key: process.env.S3_KEY || 'AKIAJXC2Y2L36WCQXFFA',
+    bucket: process.env.S3_BUCKET || 'al.donnu.publications',
+    region: 'us-west-2',
+    secret: process.env.S3_SECRET || '/C4b2bt5hMnlODLLGAh+tFU+Ijc0h2mWyPXS9K65',
+    domain: process.env.S3_DOMAIN || '',
+    emulation: process.env.S3_EMULATION || false,
+    publishLifetime: process.env.S3_PUBLISH_LIFETIME || 3600
+  },
 };

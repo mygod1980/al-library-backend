@@ -1,5 +1,5 @@
 'use strict';
-const _ = require('lodash');
+const validate = require('mongoose-validator');
 const config = require('config/config');
 const modelName = 'Publication';
 
@@ -20,9 +20,10 @@ module.exports = function (mongoose) {
       required: true
     },
     imageUrl: {
-      type: String
-      // add isUrl validation
-      // TODO: link to s3 or any other storage
+      type: String,
+      validate: validate({
+        validator: 'isURL'
+      })
     },
     description: {
       type: String,
@@ -31,9 +32,13 @@ module.exports = function (mongoose) {
     publishedAt: {
       type: Number
     },
-    // upload to s3 or some other storage
-    downloadLink: {
-      type: String
+    /* it is set only after we've uploaded file to s3 */
+    downloadUrl: {
+      type: String,
+      unique: true,
+      validate: validate({
+        validator: 'isURL'
+      }),
     }
   }, {timestamps: true});
 

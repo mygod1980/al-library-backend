@@ -37,8 +37,6 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiDescription Returns array of users.
  * @apiPermission bearer, admin
  *
- * @apiParam {String} serviceKey serviceKey of service user belongs to
-
  * @apiUse BearerAuthHeader
  * @apiUse UserResponse
  */
@@ -51,8 +49,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
- *
+
  * @apiUse BearerAuthHeader
  * @apiUse UserResponse
  */
@@ -78,7 +75,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
+
  *
  * @apiUse BearerAuthHeader
  * @apiUse UserRequest
@@ -93,7 +90,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
+
  *
  * @apiUse BearerAuthHeader
  * @apiUse EmptySuccess

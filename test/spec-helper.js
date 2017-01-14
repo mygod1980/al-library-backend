@@ -17,13 +17,15 @@ const Category = mongoose.model('Category');
 const Request = mongoose.model('Request');
 const Publication = mongoose.model('Publication');
 const Author = mongoose.model('Author');
+const AccessCode = mongoose.model('AccessCode');
 const RefreshToken = mongoose.model('RefreshToken');
 
 const FIXTURE_TYPES = {
   USER: 'user.data',
   USER_SN: 'user-sn.data',
   AUTHOR: 'author.data',
-  PUBLICATION: 'publication.data'
+  PUBLICATION: 'publication.data',
+  CATEGORY: 'category.data'
 };
 
 const clientAuth = {
@@ -150,6 +152,28 @@ const specHelper = {
     return Category.create({name: `testing-category-${Math.floor(Math.random() * 100000)}`});
   },
 
+  createRequest(request) {
+    return this
+      .post(`${testConfig.baseUrl}/api/requests`, Object.assign(request, this.getClientAuth()))
+      .then((result) => {
+        Object.assign(request, result.body);
+        return request;
+      });
+  },
+
+  approveRequest(_id, accessToken) {
+    return this
+      .post(`${testConfig.baseUrl}/api/requests/${_id}/approve`, {},
+        {headers: {'Authorization': `Bearer ${accessToken}`}})
+      .then((result) => {
+        return result.body;
+      });
+  },
+
+  getAccessCode(username, publicationId) {
+    return AccessCode.findOne({requester: username, publication: publicationId});
+  },
+
   signInUser(data) {
     return this
       .post(`${testConfig.baseUrl}/oauth`,
@@ -205,6 +229,15 @@ const specHelper = {
       });
   },
 
+  removeCategory(data) {
+    return Bb
+      .try(() => {
+        if (data._id) {
+          return Category.remove({_id: data._id});
+        }
+      });
+  },
+
   removeRequest(data) {
     return Bb
       .try(() => {
@@ -249,6 +282,7 @@ before(() => {
       RefreshToken.remove({}),
       Request.remove({}),
       Author.remove({}),
+      AccessCode.remove({}),
       Publication.remove({})
     );
 

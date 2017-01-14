@@ -34,6 +34,17 @@ module.exports = function (app, log, path) {
     };
   };
 
+  transport.sendResult = (result, scope) => {
+    result = result || scope.restfulResult;
+    const encoding = scope.encoding;
+
+    if (encoding) {
+      return scope.transportData.res.end(result, encoding);
+    }
+
+    return scope.transportData.res.send(result);
+  };
+
   const restifizer = new Restifizer({
     transports: [transport],
     log: log

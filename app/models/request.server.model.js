@@ -25,9 +25,9 @@ module.exports = function (mongoose) {
       required: true
     },
     extra: {
-      /* if type is registration `extra` contains username, firstName, lastName, role
+      /* if type is registration `extra` contains firstName, lastName, role
        * else
-       * Publication id, username
+       * Publication id
        * */
       type: mongoose.Schema.Types.Mixed,
       required: true
