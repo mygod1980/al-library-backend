@@ -1,7 +1,3 @@
-/**
- * Created by eugenia on 10/10/15.
- */
-
 'use strict';
 
 module.exports = function (app) {
@@ -26,7 +22,7 @@ module.exports = function (app) {
       return res.end();
     }
 
-    res.send({error: err.message});
+    res.send({error: err.message || err['error_description']});
 
   });
 

@@ -1,5 +1,5 @@
 /**
- * Created by eugenia on 29/04/16.
+ * Created by eugenia on 03.01.2017.
  */
 'use strict';
 
@@ -10,7 +10,13 @@ const eventBus = require('app/lib/event-bus');
 eventBus.EVENTS = {
   UPDATE_HEALTH: 'update.health',
   FORGOT_PASSWORD: 'password.forgot',
-  RESET_PASSWORD: 'password.reset'
+  RESET_PASSWORD: 'password.reset',
+  REGISTRATION_REQUEST: 'request.registration',
+  REGISTRATION_REQUEST_APPROVED: 'request.registration.approved',
+  REGISTRATION_REQUEST_REJECTED: 'request.registration.rejected',
+  DOWNLOAD_LINK_REQUEST: 'request.downloadLink',
+  DOWNLOAD_LINK_REQUEST_APPROVED: 'request.downloadLink.approved',
+  DOWNLOAD_LINK_REQUEST_REJECTED: 'request.downloadLink.rejected'
 };
 
 eventBus.register('app', eventBus.EVENTS);

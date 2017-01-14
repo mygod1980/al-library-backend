@@ -1,7 +1,3 @@
-/**
- * Created by eugenia on 12/10/15.
- */
-
 'use strict';
 
 var helmet = require('helmet');

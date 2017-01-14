@@ -45,20 +45,17 @@
     "newrelic": "^1.29.0",
     "nodemailer": "^2.6.4",
     "nodemailer-ses-transport": "^1.4.0",
-    "oauthifizer": "^0.4.1",
+    "oauthifizer": "^0.4.2",
     "pug": "^2.0.0-beta6",
     "request-json": "^0.6.1",
     "request-promise": "^4.1.1",
     "restifizer": "^0.8.10",
     "restifizer-mongoose-ds": "^0.1.5",
-    "socket.io": "^1.5.1",
-    "socket.io-redis": "^1.1.1",
     "watchify": "^3.7.0",
     "winston": "^2.2.0"
   },
   "devDependencies": {
     "chakram": "^1.4.0",
-    "mocha": "^2.5.3",
-    "socket.io-client": "^1.5.1"
+    "mocha": "^2.5.3"
   }
 }

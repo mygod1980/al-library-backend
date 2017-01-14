@@ -7,25 +7,34 @@ const mongoose = require('config/mongoose');
 const config = require('test/config');
 const specHelper = require('test/spec-helper');
 
-const User = mongoose.model('User');
+const Author = mongoose.model('Author');
 const expect = chakram.expect;
 
-describe('User profile', () => {
+describe('Author', () => {
 
   const adminUser = specHelper.getAdminUser();
   const user = specHelper.getFixture(specHelper.FIXTURE_TYPES.USER);
+  const author = specHelper.getFixture(specHelper.FIXTURE_TYPES.AUTHOR);
 
   before('sign in admin', () => {
     return specHelper.signInUser(adminUser);
   });
+  
+  before('create user by admin', () => {
+    return specHelper.createUser(user, adminUser.auth['access_token']);
+  });
 
-  describe('Create user by admin', () => {
+  before('sign in user', () => {
+    return specHelper.signInUser(user);
+  });
+
+  describe('Create author by admin', () => {
 
     let response;
 
     before('send post', () => {
       return chakram
-        .post(`${config.baseUrl}/api/users`, Object.assign({}, user), {
+        .post(`${config.baseUrl}/api/authors`, author, {
           headers: {
             'Authorization': `Bearer ${adminUser.auth['access_token']}`
           }
@@ -40,39 +49,18 @@ describe('User profile', () => {
     });
 
     it('should contain _id', () => {
-      user._id = response.body._id;
+      author._id = response.body._id;
       return expect(response.body._id).to.exist;
     });
   });
-  describe('Sign in', () => {
+
+  describe('Create author by plain user', () => {
 
     let response;
 
     before('send post', () => {
       return chakram
-        .post(`${config.baseUrl}/oauth`,
-          Object.assign({
-            "grant_type": "password"
-          }, _.pick(user, 'username', 'password'), specHelper.getClientAuth()))
-        .then((result) => {
-          response = result;
-        });
-    });
-
-    it('should return status 200', () => {
-      expect(response).to.have.status(200);
-      user.auth = _.pick(response.body, 'access_token', 'refresh_token');
-    });
-
-  });
-
-  describe('Create user by plain user', () => {
-
-    let response;
-
-    before('send post', () => {
-      return chakram
-        .post(`${config.baseUrl}/api/users`, Object.assign({}, user),
+        .post(`${config.baseUrl}/api/authors`, author,
           {
             headers: {
               'Authorization': `Bearer ${user.auth['access_token']}`
@@ -88,30 +76,13 @@ describe('User profile', () => {
     });
   });
 
-  describe('Create user by client', () => {
-
-    let response;
-
-    before('send post', () => {
-      return chakram
-        .post(`${config.baseUrl}/api/users`, Object.assign({}, user, specHelper.getClientAuth()))
-        .then((result) => {
-          response = result;
-        });
-    });
-
-    it('should return status 401', () => {
-      return expect(response).to.have.status(401);
-    });
-  });
-
   describe('Get List by admin', () => {
 
     let response;
 
     before('send request', () => {
       return chakram
-        .get(`${config.baseUrl}/api/users`,
+        .get(`${config.baseUrl}/api/authors`,
           {
             headers: {
               'Authorization': `Bearer ${adminUser.auth['access_token']}`
@@ -134,7 +105,7 @@ describe('User profile', () => {
 
     before('send request', () => {
       return chakram
-        .get(`${config.baseUrl}/api/users`,
+        .get(`${config.baseUrl}/api/authors`,
           {
             headers: {
               'Authorization': `Bearer ${user.auth['access_token']}`
@@ -145,19 +116,19 @@ describe('User profile', () => {
         });
     });
 
-    it('should return status 403', () => {
-      expect(response).to.have.status(403);
+    it('should return status 200', () => {
+      expect(response).to.have.status(200);
     });
 
   });
 
-  describe('Get Profile', () => {
+  describe('Get one', () => {
 
     let response;
 
     before('send request', () => {
       return chakram
-        .get(`${config.baseUrl}/api/users/me`,
+        .get(`${config.baseUrl}/api/authors/${author._id}`,
           {
             headers: {
               'Authorization': `Bearer ${user.auth['access_token']}`
@@ -173,24 +144,28 @@ describe('User profile', () => {
     });
 
     it('should be the same _id', () => {
-      expect(response).to.have.json('_id', user._id);
+      expect(response).to.have.json('_id', author._id);
     });
 
-    it('should be the same username', () => {
-      expect(response).to.have.json('username', user.username.toLowerCase());
-    });
 
     it('should be the same firstName', () => {
-      expect(response).to.have.json('firstName', user.firstName);
+      expect(response).to.have.json('firstName', author.firstName);
+    });
+
+    it('should be the same secondName', () => {
+      expect(response).to.have.json('secondName', author.secondName);
     });
 
     it('should be the same lastName', () => {
-      expect(response).to.have.json('lastName', user.lastName);
+      expect(response).to.have.json('lastName', author.lastName);
     });
 
+    it('should be the same description', () => {
+      expect(response).to.have.json('description', author.description);
+    });
   });
 
-  describe('Change Profile', () => {
+  describe('Change author by user', () => {
 
     const NEW_FIRST_NAME = 'new-first-name';
 
@@ -199,13 +174,67 @@ describe('User profile', () => {
     before('send request', () => {
 
       return chakram
-        .patch(`${config.baseUrl}/api/users/me`,
+        .patch(`${config.baseUrl}/api/authors/${author._id}`,
           {
             firstName: NEW_FIRST_NAME
           },
           {
             headers: {
               'Authorization': `Bearer ${user.auth['access_token']}`
+            }
+          }
+        )
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
+    });
+  });
+
+  describe('Remove author by user', () => {
+
+    let response;
+
+    before('send request', () => {
+
+      return chakram
+        .delete(`${config.baseUrl}/api/authors/${author._id}`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${user.auth['access_token']}`
+            }
+          }
+        )
+        .then((result) => {
+          response = result;
+        });
+    });
+
+    it('should return status 403', () => {
+      expect(response).to.have.status(403);
+    });
+  });
+
+  describe('Change author by admin', () => {
+
+    const NEW_FIRST_NAME = 'new-first-name';
+
+    let response;
+
+    before('send request', () => {
+
+      return chakram
+        .patch(`${config.baseUrl}/api/authors/${author._id}`,
+          {
+            firstName: NEW_FIRST_NAME
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${adminUser.auth['access_token']}`
             }
           }
         )
@@ -223,18 +252,18 @@ describe('User profile', () => {
     });
   });
 
-  describe('Remove Profile', () => {
+  describe('Remove author by admin', () => {
 
     let response;
 
     before('send request', () => {
 
       return chakram
-        .delete(`${config.baseUrl}/api/users/me`,
+        .delete(`${config.baseUrl}/api/authors/${author._id}`,
           {},
           {
             headers: {
-              'Authorization': `Bearer ${user.auth['access_token']}`
+              'Authorization': `Bearer ${adminUser.auth['access_token']}`
             }
           }
         )
@@ -250,5 +279,9 @@ describe('User profile', () => {
 
   after('remove user', () => {
     return specHelper.removeUser(user);
+  });
+
+  after('remove author', () => {
+    return specHelper.removeAuthor(author);
   });
 });

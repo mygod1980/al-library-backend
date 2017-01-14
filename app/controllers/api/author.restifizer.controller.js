@@ -4,7 +4,6 @@
 
 'use strict';
 
-const _ = require('lodash');
 const Bb = require('bluebird');
 
 const HTTP_STATUSES = require('http-statuses');
@@ -130,15 +129,8 @@ class AuthorController extends BaseController {
 
   }
 
-  assignFilter(queryParams, fieldName, scope) {
-    return (!scope.isUpdate() || fieldName !== 'password') &&
-      super.assignFilter(queryParams, fieldName, scope);
-  }
-
   pre(scope) {
-    const user = scope.getUser();
-
-    if (!user.isAdmin()) {
+    if (!scope.isAdmin() && scope.isChanging()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }

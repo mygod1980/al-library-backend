@@ -11,18 +11,23 @@ const User = mongoose.model('User');
 const expect = chakram.expect;
 
 describe('User Auth', () => {
+  const adminUser = specHelper.getAdminUser();
   const user = specHelper.getFixture(specHelper.FIXTURE_TYPES.USER);
   const otherUser = specHelper.getFixture(specHelper.FIXTURE_TYPES.USER);
 
+  before('sign in admin', () => {
+    return specHelper.signInUser(adminUser);
+  });
+
   before('create and sign in user', () => {
     return specHelper
-      .createUser(user)
+      .createUser(user, adminUser.auth['access_token'])
       .then(specHelper.signInUser.bind(specHelper, user));
   });
 
   before('create and sign in otherUser', () => {
     return specHelper
-      .createUser(otherUser)
+      .createUser(otherUser, adminUser.auth['access_token'])
       .then(specHelper.signInUser.bind(specHelper, otherUser));
   });
 

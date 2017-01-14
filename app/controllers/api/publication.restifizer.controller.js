@@ -11,15 +11,16 @@ const HTTP_STATUSES = require('http-statuses');
 const mongoose = require('config/mongoose');
 const config = require('config/config');
 const BaseController = require('app/lib/base.restifizer.controller');
+const publicationPlugin = require('app/lib/restifizer.plugin/publication.restifizer.plugin');
 
 const Publication = mongoose.model('Publication');
 
 /**
  * @apiDefine PublicationRequest
  * @apiParam {String} title title publication title
- * @apiParam {String} author author publication author _id
+ * @apiParam {Array} authors authors publication author _id
  * @apiParam {String} description description publication description
- * @apiParam {Array} tags tags categories publication is tagged with
+ * @apiParam {Array} categories categories categories publication is tagged with
  * @apiParam {String} downloadLink downloadLink link to digital copy of publication
  * @apiParam {Number} publishedAt publishedAt publication date
  *
@@ -30,12 +31,12 @@ const Publication = mongoose.model('Publication');
  * @apiSuccess {String} title title publication title
  * @apiSuccess {String} description description publication description
  * @apiSuccess {String} publishedAt publishedAt publication date
- * @apiSuccess {Object} [author] publication author
+ * @apiSuccess {Array} [authors] publication authors
  * @apiSuccess {String} [author.firstName] firstName
  * @apiSuccess {String} [author.secondName] secondName
  * @apiSuccess {String} [author.lastName] lastName
  * @apiSuccess {String} [author.description] description
- * @apiSuccess {Array} tags tags categories publication is tagged with
+ * @apiSuccess {Array} categories categories categories publication is tagged with
  * @apiSuccess {String} downloadLink downloadLink link to digital copy of publication
  * @apiSuccess {String(ISODate)} createdAt
  * @apiSuccess {String(ISODate)} updatedAt
@@ -119,23 +120,31 @@ class PublicationController extends BaseController {
       fields: [
         'title',
         {
-          name: 'author',
+          name: 'authors',
           fields: ['firstName', 'lastName', 'secondName', 'description']
         },
         'imageUrl',
         'publishedAt',
         'description',
-        'tags',
-        'downloadLink',
+        'categories',
         'createdAt',
-        'updatedAt'
+        'updatedAt',
+        'downloadUrl'
       ],
       readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
+        }),
+        'select': BaseController.createAction({
+          auth: false
         })
-      }
+      },
+      plugins: [
+        {
+          plugin: publicationPlugin.restifizer
+        }
+      ]
     });
 
     super(options);
@@ -143,16 +152,20 @@ class PublicationController extends BaseController {
 
 
   pre(scope) {
-    const user = scope.getUser();
 
-    if (!user.isAdmin()) {
+    if (!scope.isAdmin() && scope.isChanging()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
 
-  // TODO: create unauthenticated route for unauthenticated publications
+  post(model, scope) {
+    if (model.downloadUrl) {
+      model.downloadUrl = `${scope.req.protocol}://${scope.req.get('host')}`+
+        `/api/publications/${model._id}/getFile`;
+    }
 
-
+    return model;
+  }
 }
 
 module.exports = PublicationController;

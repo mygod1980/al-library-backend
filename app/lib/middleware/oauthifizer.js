@@ -1,7 +1,3 @@
-/**
- * Created by eugenia on 10/10/15.
- */
-
 'use strict';
 
 const OAuthifizer = require('oauthifizer');

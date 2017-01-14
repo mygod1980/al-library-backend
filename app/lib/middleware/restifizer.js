@@ -1,7 +1,3 @@
-/**
- * Created by vedi on 10/10/15.
- */
-
 'use strict';
 
 const _ = require('lodash');
@@ -36,6 +32,17 @@ module.exports = function (app, log, path) {
     return options.auth ? auths : function (req, res, callback) {
       callback();
     };
+  };
+
+  transport.sendResult = (result, scope) => {
+    result = result || scope.restfulResult;
+    const encoding = scope.encoding;
+
+    if (encoding) {
+      return scope.transportData.res.end(result, encoding);
+    }
+
+    return scope.transportData.res.send(result);
   };
 
   const restifizer = new Restifizer({

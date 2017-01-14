@@ -37,8 +37,6 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiDescription Returns array of users.
  * @apiPermission bearer, admin
  *
- * @apiParam {String} serviceKey serviceKey of service user belongs to
-
  * @apiUse BearerAuthHeader
  * @apiUse UserResponse
  */
@@ -51,8 +49,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
- *
+
  * @apiUse BearerAuthHeader
  * @apiUse UserResponse
  */
@@ -78,7 +75,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
+
  *
  * @apiUse BearerAuthHeader
  * @apiUse UserRequest
@@ -93,7 +90,7 @@ const RefreshToken = mongoose.model('RefreshToken');
  * @apiPermission bearer
  *
  * @apiParam {String} _id user id, you can use "me" shortcut.
- * @apiParam {String} serviceKey serviceKey of service user belongs to
+
  *
  * @apiUse BearerAuthHeader
  * @apiUse EmptySuccess
@@ -123,12 +120,6 @@ class UserController extends BaseController {
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
-        }),
-        insert: BaseController.createAction({
-          auth: [
-            BaseController.AUTH.BEARER,
-            BaseController.AUTH.CLIENT
-          ]
         })
       },
 
@@ -223,23 +214,16 @@ class UserController extends BaseController {
       params._id = user.id;
     }
 
-    if (scope.isSelect() && !scope.isSelectOne() && !user.isAdmin()) {
+    if (scope.isInsert() && !scope.isAdmin()) {
+      return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError('Only admins can create new users'));
+    }
+
+    if (scope.isSelect() && !scope.isSelectOne() && !scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
 
-    if (params._id && !user._id.equals(params._id) && !user.isAdmin()) {
+    if (params._id && !user._id.equals(params._id) && !scope.isAdmin()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
-    }
-  }
-
-  afterSave(scope) {
-    // user is signing up
-    if (scope.isInsert()) {
-      return this._authenticate(scope.model, scope)
-        .then((auth) => {
-          scope.context.auth = auth;
-          return auth;
-        });
     }
   }
 

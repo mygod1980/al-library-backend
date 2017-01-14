@@ -1,17 +1,18 @@
 'use strict';
-
+const validate = require('mongoose-validator');
+const config = require('config/config');
 const modelName = 'Publication';
 
 module.exports = function (mongoose) {
   const schema = new mongoose.Schema({
-    author: [{
+    authors: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Author',
       required: true
     }],
-    tags: [{
-      type: String,
-      'enum': [/*TODO: add tags here like categories keys*/]
+    categories: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category'
     }],
     title: {
       type: String,
@@ -19,9 +20,10 @@ module.exports = function (mongoose) {
       required: true
     },
     imageUrl: {
-      type: String
-      // add isUrl validation
-      // TODO: link to s3 or any other storage
+      type: String,
+      validate: validate({
+        validator: 'isURL'
+      })
     },
     description: {
       type: String,
@@ -30,9 +32,13 @@ module.exports = function (mongoose) {
     publishedAt: {
       type: Number
     },
-    // upload to s3 or some other storage
-    downloadLink: {
-      type: String
+    /* it is set only after we've uploaded file to s3 */
+    downloadUrl: {
+      type: String,
+      unique: true,
+      validate: validate({
+        validator: 'isURL'
+      }),
     }
   }, {timestamps: true});
 

@@ -16,7 +16,8 @@ module.exports = function () {
   // Instantiate a Mocha instance.
   const mocha = new Mocha({
     ui: 'bdd',
-    fullTrace: true
+    fullTrace: true,
+    timeout: 50000
   });
 
   const testDir = 'test/spec';

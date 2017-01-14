@@ -1,7 +1,3 @@
-/**
- * Created by eugenia on 05/26/16.
- */
-
 'use strict';
 
 module.exports = function (app) {

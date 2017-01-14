@@ -1,7 +1,3 @@
-/**
- * Created by eugenia on 11/01/16.
- */
-
 'use strict';
 
 const config = require('config/config');

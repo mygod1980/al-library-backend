@@ -298,7 +298,6 @@ function restifizer(restifizerController, options) {
     }
   }, 'unlinkAccount');
 
-
   restifizerController.actions.logout = restifizerController.normalizeAction({
     auth: ['bearer'],
     method: 'post',
