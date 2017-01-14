@@ -126,7 +126,10 @@ class PublicationController extends BaseController {
         'imageUrl',
         'publishedAt',
         'description',
-        'categories',
+        {
+          name: 'categories',
+          fields: ['name', 'description']
+        },
         'createdAt',
         'updatedAt',
         'downloadUrl'
