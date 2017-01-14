@@ -202,6 +202,14 @@ class UserController extends BaseController {
   }
 
   assignFilter(queryParams, fieldName, scope) {
+
+    if (fieldName === 'role') {
+      if (scope.isAdmin()) {
+        scope.roleChanged = true;
+      }
+      return scope.isAdmin();
+    }
+
     return (!scope.isUpdate() || fieldName !== 'password') &&
       super.assignFilter(queryParams, fieldName, scope);
   }
@@ -233,6 +241,13 @@ class UserController extends BaseController {
     }
 
     delete user.hashedPassword;
+
+    if (scope.isUpdate() && scope.roleChanged) {
+      return this._authenticate(user, scope)
+        .then(() => {
+          return user;
+        });
+    }
 
     return user;
   }

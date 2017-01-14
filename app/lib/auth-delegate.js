@@ -92,7 +92,8 @@ class AuthDelegate {
             return User.findById(token.userId)
               .then((user) => {
                 if (!user) {
-                  throw new Error('Unknown user');
+                  log.error('Unknown user');
+                  return {obj: false};
                 }
                 const info = {scope: token.scopes};
 
@@ -111,6 +112,18 @@ class AuthDelegate {
               delete doc.scopes;
               const Model = doc.clientId ? Client : User;
               result.obj = Model.hydrate(doc);
+
+              if (doc.role) {
+                // check if role is the same as in db or user really exists
+                return Model.findById(doc._id)
+                  .then((user) => {
+                    if (!user || doc.role !== user.role) {
+                      return {obj: false};
+                    }
+
+                    return result;
+                  });
+              }
 
               return result;
             });
