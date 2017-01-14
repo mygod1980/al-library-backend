@@ -1,5 +1,5 @@
 'use strict';
-
+const config = require('config/config');
 const modelName = 'AccessCode';
 
 module.exports = function (mongoose) {
@@ -16,8 +16,13 @@ module.exports = function (mongoose) {
       type: String,
       unique: true,
       required: true
+    },
+    createdAt: {
+      type: Date,
+      'default': Date.now,
+      expires: config.security.accessCodeTtl
     }
-  }, {timestamps: true});
+  });
 
   return mongoose.model(modelName, schema);
 };

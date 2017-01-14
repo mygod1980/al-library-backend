@@ -10,11 +10,12 @@ module.exports = {
     title: appTitle
   },
 
-  productName: 'PROмова',
+  productName: 'PROmova',
 
   security: {
     tokenLife: 3600,
-    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature'
+    jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature',
+    accessCodeTtl: process.env.ACCESS_CODE_TTL || 60 * 60 * 24 * 7 // one week
   },
 
   redis: {
@@ -57,7 +58,6 @@ module.exports = {
   adminMail: process.env.ADMIN_MAIL,
   roles: {
     USER: 'user',
-    STUDENT: 'student',
     ADMIN: 'admin'
   },
   request: {

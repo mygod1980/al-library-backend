@@ -12,7 +12,18 @@ const S3Service = require('app/lib/services/s3');
 const config = require('config/config');
 
 function restifizer(restifizerController) {
-
+  /**
+   * @apiGroup Publication
+   * @apiName UploadPublicationFileToS3
+   * @api {post} /api/publications/:_id/upload Upload publication file to s3. Returns publication with downloadUrl
+   * @apiDescription Uploads pdf/djvu to s3
+   * @apiPermission bearer, admin
+   *
+   * @apiParam {String} _id _id of publication
+   * @apiParam {Buffer} file file to upload
+   *
+   * @apiUse BearerAuthHeader
+   */
   restifizerController.actions.upload = restifizerController.normalizeAction({
     auth: [BaseController.AUTH.BEARER],
     method: 'post',
@@ -47,9 +58,15 @@ function restifizer(restifizerController) {
   }, 'upload');
 
   /**
-   * unprotected route for anonymous users
-   * we check access rights by access code passed in URL params
-   * */
+   * @apiGroup Publication
+   * @apiName DownoadPublicationFileFromS3
+   * @api {get} /api/publications/:_id/download/:requester/:code Download publication file from s3
+   * @apiDescription Downloads file from s3
+   * @apiParam {String} _id _id of publication
+   * @apiParam {String} requester requester username
+   * @apiParam {String} code access code created to grant access to this file
+   *
+   */
 
   restifizerController.actions.download = restifizerController.normalizeAction({
     auth: false,
@@ -91,8 +108,15 @@ function restifizer(restifizerController) {
   }, 'download');
 
   /**
-   * protected route for authenticated users
-   * */
+   * @apiGroup Publication
+   * @apiName DownloadPublicationFileFromS3
+   * @api {get} /api/publications/:_id/getFile Download publication file from s3. Returns file
+   * @apiDescription Downloads pdf/djvu from s3
+   * @apiPermission bearer, admin
+   *
+   * @apiParam {String} _id _id of publication
+   * @apiUse BearerAuthHeader
+   */
   restifizerController.actions.getFile = restifizerController.normalizeAction({
     auth: [BaseController.AUTH.BEARER],
     method: 'get',
@@ -117,6 +141,16 @@ function restifizer(restifizerController) {
     }
   }, 'getFile');
 
+  /**
+   * @apiGroup Publication
+   * @apiName RemovePublicationFileFromS3
+   * @api {get} /api/publications/:_id/removeFile Remove publication file from s3. Returns file
+   * @apiDescription Removes pdf/djvu from s3
+   * @apiPermission bearer, admin
+   *
+   * @apiParam {String} _id _id of publication
+   * @apiUse BearerAuthHeader
+   */
   restifizerController.actions.removeFile = restifizerController.normalizeAction({
     auth: [BaseController.AUTH.BEARER],
     method: 'post',

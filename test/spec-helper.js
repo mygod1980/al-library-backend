@@ -24,7 +24,8 @@ const FIXTURE_TYPES = {
   USER: 'user.data',
   USER_SN: 'user-sn.data',
   AUTHOR: 'author.data',
-  PUBLICATION: 'publication.data'
+  PUBLICATION: 'publication.data',
+  CATEGORY: 'category.data'
 };
 
 const clientAuth = {
@@ -224,6 +225,15 @@ const specHelper = {
       .try(() => {
         if (data._id) {
           return User.remove({_id: data._id});
+        }
+      });
+  },
+
+  removeCategory(data) {
+    return Bb
+      .try(() => {
+        if (data._id) {
+          return Category.remove({_id: data._id});
         }
       });
   },

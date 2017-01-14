@@ -48,11 +48,16 @@ const downloadLinkRequestRejectedOptions = {
 
 const forgotTpl = pug.compileFile('app/views/templates/forgot.email.view.html');
 const credentialsRequestTpl = pug.compileFile('app/views/templates/request.registration.email.view.html');
-const credentialsRequestApprovedTpl = pug.compileFile('app/views/templates/request.registration.approved.email.view.html');
-const credentialsRequestRejectedTpl = pug.compileFile('app/views/templates/request.registration.rejected.email.view.html');
-const downloadLinkRequestTpl = pug.compileFile('app/views/templates/request.downloadLink.email.view.html');
-const downloadLinkRequestApprovedTpl = pug.compileFile('app/views/templates/request.downloadLink.approved.email.view.html');
-const downloadLinkRequestRejectedTpl = pug.compileFile('app/views/templates/request.downloadLink.rejected.email.view.html');
+const credentialsRequestApprovedTpl = pug
+  .compileFile('app/views/templates/request.registration.approved.email.view.html');
+const credentialsRequestRejectedTpl = pug
+  .compileFile('app/views/templates/request.registration.rejected.email.view.html');
+const downloadLinkRequestTpl = pug
+  .compileFile('app/views/templates/request.downloadLink.email.view.html');
+const downloadLinkRequestApprovedTpl = pug
+  .compileFile('app/views/templates/request.downloadLink.approved.email.view.html');
+const downloadLinkRequestRejectedTpl = pug
+  .compileFile('app/views/templates/request.downloadLink.rejected.email.view.html');
 const resetTpl = pug.compileFile('app/views/templates/reset.email.view.html');
 
 class EmailService {
