@@ -37,7 +37,6 @@ module.exports = function (mongoose) {
     /* it is set only after we've uploaded file to s3 */
     downloadUrl: {
       type: String,
-      unique: true,
       validate: validate({
         validator: 'isURL'
       }),

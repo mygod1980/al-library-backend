@@ -116,6 +116,7 @@ class UserController extends BaseController {
         'updatedAt',
         'auth'
       ],
+      qFields: ['role', 'firstName', 'lastName', 'username'],
       readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({

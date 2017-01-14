@@ -134,6 +134,7 @@ class PublicationController extends BaseController {
         'updatedAt',
         'downloadUrl'
       ],
+      qFields: ['title', 'description'],
       readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({

@@ -107,6 +107,7 @@ class CategoryController extends BaseController {
         'createdAt',
         'updatedAt'
       ],
+      qFields: ['name', 'description'],
       readOnlyFields: ['createdAt', 'updatedAt'],
       actions: {
         'default': BaseController.createAction({

@@ -39,7 +39,7 @@ const Author = mongoose.model('Author');
  * @apiDescription Returns array of authors.
  * @apiPermission bearer, admin
  *
- * 
+ *
 
  * @apiUse BearerAuthHeader
  * @apiUse AuthorResponse
@@ -53,7 +53,7 @@ const Author = mongoose.model('Author');
  * @apiPermission bearer
  *
  * @apiParam {String} _id author id
- * 
+ *
  *
  * @apiUse BearerAuthHeader
  * @apiUse AuthorResponse
@@ -118,6 +118,7 @@ class AuthorController extends BaseController {
         'updatedAt'
       ],
       readOnlyFields: ['createdAt', 'updatedAt'],
+      qFields: ['firstName', 'secondName', 'lastName', 'description'],
       actions: {
         'default': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
