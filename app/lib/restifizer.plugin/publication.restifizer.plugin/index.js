@@ -29,14 +29,15 @@ function restifizer(restifizerController) {
     method: 'post',
     path: ':_id/upload',
     handler: function upload(scope) {
-      const {file} = scope.getBody();
+      const file = scope.getBody().file || scope.req.files.file;
+      const {type} = scope.req.query || file.type;
+      const extension = type && type.split('/')[1] || 'pdf';
 
       if (!file) {
         return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('File is missing'));
       }
 
       if (!scope.isAdmin()) {
-        /* TODO: check if is student*/
         return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError(`Only admins can upload publications`));
       }
 
@@ -45,7 +46,7 @@ function restifizer(restifizerController) {
         .locateModel(scope)
         .then((doc) => {
           context.doc = doc;
-          return S3Service.upload({data: file, key: doc._id.toString()});
+          return S3Service.upload({data: file, key: doc._id.toString(), extension});
         })
         .then((data) => {
           context.doc.set('downloadUrl', data.Location);
@@ -82,21 +83,25 @@ function restifizer(restifizerController) {
       delete params.requester;
       delete params.code;
 
+      const context = {};
+
       return this
         .locateModel(scope)
-        .then(() => {
+        .then((doc) => {
+          context.doc = doc;
           return AccessCode.findOne({requester, code});
         })
         .then((doc) => {
           if (!doc) {
             return Bb.reject(HTTP_STATUSES.BAD_REQUEST.createError('Access to resource cannot be established'));
           }
+          context.extension = _.last(context.doc.downloadUrl.split('.'));
+          const key = `${context.doc._id.toString()}.${context.extension}`;
 
-          return S3Service.download(doc.publication.toString());
+          return S3Service.download(key);
         })
         .then(({file, contentType}) => {
-          /* TODO: set extension depending on type */
-          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.pdf`);
+          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.${context.extension}`);
           scope.res.setHeader('Content-type', contentType);
           scope.encoding = 'binary';
           return file;
@@ -123,14 +128,17 @@ function restifizer(restifizerController) {
     path: ':_id/getFile',
     handler: function getFile(scope) {
       const {_id} = scope.getParams();
+      const context = {};
       return this
         .locateModel(scope)
         .then((doc) => {
-          return S3Service.download(doc._id.toString());
+          context.extension = _.last(doc.downloadUrl.split('.'));
+          const key = `${doc._id.toString()}.${context.extension}`;
+          return S3Service.download(key);
         })
         .then(({file, contentType}) => {
           /* TODO: set extension depending on type */
-          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.pdf`);
+          scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.${context.extension}`);
           scope.res.setHeader('Content-type', contentType);
           scope.encoding = 'binary';
           return file;
@@ -170,7 +178,7 @@ function restifizer(restifizerController) {
           return S3Service.removeObject(doc._id.toString());
         })
         .then(() => {
-          return Publication.update({ _id: context.doc._id }, { $unset: { downloadUrl: 1 }});
+          return Publication.update({_id: context.doc._id}, {$unset: {downloadUrl: 1}});
         })
         .then(() => {
           const doc = context.doc.toObject();

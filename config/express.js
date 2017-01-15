@@ -8,6 +8,7 @@ const log = require('./log')(module);
 const bodyParser = require('body-parser');
 const compress = require('compression');
 const methodOverride = require('method-override');
+const multipart = require('connect-multiparty');
 
 module.exports = function () {
   // Initialize express app
@@ -48,11 +49,14 @@ module.exports = function () {
   }
 
   // Request body parsing middleware should be above methodOverride
+
   app.use(bodyParser.urlencoded({
     extended: true,
     limit: '200mb'
   }));
+
   app.use(bodyParser.json());
+  app.use(multipart());
   app.use(methodOverride());
   // Enable jsonp
   app.enable('jsonp callback');

@@ -11,7 +11,7 @@ const s3 = new AWS.S3({accessKeyId: s3Config.key,
   region: s3Config.region});
 
 class S3Service {
-  static upload({data, key}) {
+  static upload({data, key, extension}) {
 
     if (!Buffer.isBuffer(data)) {
       /* we're dealing with file */
@@ -22,7 +22,7 @@ class S3Service {
       Bucket: s3Config.bucket,
       ACL: 'private',
       /* publication._id */
-      Key: key,
+      Key: extension ? `${key}.${extension}` : key,
       /* Buffer or Readable Stream*/
       Body: data
     };
