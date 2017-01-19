@@ -2,7 +2,6 @@
  * Created by eugenia on 07.01.17.
  */
 const crypto = require('crypto');
-const _ = require('lodash');
 const Bb = require('bluebird');
 const HTTP_STATUSES = require('http-statuses');
 const BaseController = require('app/lib/base.restifizer.controller');

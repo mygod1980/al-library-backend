@@ -8,7 +8,7 @@ const Bb = require('bluebird');
 
 const HTTP_STATUSES = require('http-statuses');
 const mongoose = require('config/mongoose');
-const ObjectId = mongoose.Types.ObjectId
+const ObjectId = mongoose.Types.ObjectId;
 const config = require('config/config');
 const eventBus = require('config/event-bus');
 const Request = mongoose.model('Request');
