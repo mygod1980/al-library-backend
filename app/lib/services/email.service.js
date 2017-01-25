@@ -88,6 +88,7 @@ class EmailService {
       username: event.username,
       firstName: event.firstName,
       lastName: event.lastName,
+      password: event.password,
       url: '' /* TODO add URL here*/
     };
 

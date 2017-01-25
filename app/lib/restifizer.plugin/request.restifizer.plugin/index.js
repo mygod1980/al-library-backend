@@ -7,6 +7,7 @@ const HTTP_STATUSES = require('http-statuses');
 const BaseController = require('app/lib/base.restifizer.controller');
 const Request = require('config/mongoose').model('Request');
 const Publication = require('config/mongoose').model('Publication');
+const User = require('config/mongoose').model('User');
 const eventBus = require('config/event-bus');
 
 function restifizer(restifizerController) {
@@ -71,9 +72,19 @@ function restifizer(restifizerController) {
             }
           };
 
-          return Bb.join(doc.save(), getPublication());
+          const createUserIfNeeded = () => {
+            if (isRegistration) {
+              const user = Object.assign({password: Math.floor(Math.random() * 10000000000).toString()}, doc.extra);
+              return User.create(user)
+                .then(() => {
+                  return user;
+                });
+            }
+          };
+
+          return Bb.join(doc.save(), getPublication(), createUserIfNeeded());
         })
-        .spread((doc, publication) => {
+        .spread((doc, publication, user) => {
 
           const extra = Object.assign({username: doc.username}, doc.extra);
           if (!isRegistration) {
@@ -83,8 +94,10 @@ function restifizer(restifizerController) {
             }
 
             extra.publication = publication;
-            extra.downloadLink = `${scope.req.protocol}://${scope.req.get('host')}`+
+            extra.downloadLink = `${scope.req.protocol}://${scope.req.get('host')}` +
               `/api/publications/${publication._id}/download`;
+          } else {
+            extra.password = user.password;
           }
           eventBus.emit(eventName, extra);
 
