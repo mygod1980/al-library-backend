@@ -81,7 +81,8 @@ class AuthDelegate {
       } else if (refreshToken) {
         return RefreshToken.findOne({token: refreshToken});
       } else {
-        throw new Error('Wrong context!');
+        log.error('Wrong context!');
+        return {obj: false};
       }
     })
       .then((token) => {

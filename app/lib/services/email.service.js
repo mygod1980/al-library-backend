@@ -89,7 +89,7 @@ class EmailService {
       firstName: event.firstName,
       lastName: event.lastName,
       password: event.password,
-      url: '' /* TODO add URL here*/
+      url: `${config.adminPanelUrl}/#/resources/requests/${event.requestId}`
     };
 
     return this._sendEmail(credentialsRequestTpl, templateData, credentialsRequestOptions);
@@ -134,7 +134,7 @@ class EmailService {
       username: event.username,
       firstName: event.firstName,
       lastName: event.lastName,
-      url: '' /* TODO add URL to approval in admin panel here*/
+      url: `${config.adminPanelUrl}/#/resources/requests/${event.requestId}`
     };
 
     return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);

@@ -126,6 +126,9 @@ class RequestController extends BaseController {
         update: BaseController.createAction({
           enabled: false
         }),
+        selectOne: BaseController.createAction({
+          auth: false
+        }),
         'delete': BaseController.createAction({
           auth: [BaseController.AUTH.BEARER]
         })
@@ -142,7 +145,7 @@ class RequestController extends BaseController {
   }
 
   pre(scope) {
-    if (!scope.isAdmin() && !scope.isInsert()) {
+    if (!scope.isAdmin() && !scope.isInsert() && !scope.isSelectOne()) {
       return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError());
     }
   }
@@ -190,7 +193,7 @@ class RequestController extends BaseController {
       eventBus.EVENTS.DOWNLOAD_LINK_REQUEST;
 
     if (scope.isInsert()) {
-      eventBus.emit(eventName, Object.assign({username: body.username}, extra));
+      eventBus.emit(eventName, Object.assign({username: body.username, requestId: scope.model.id}, extra));
     }
   }
 }

@@ -12,6 +12,8 @@ module.exports = {
 
   productName: 'PROmova',
 
+  adminPanelUrl: process.env.ADMIN_PANEL_URL || 'http://localhost:3000',
+
   security: {
     tokenLife: 3600,
     jwtSignature: process.env.JWT_SIGNATURE || 'defaultSignature',
@@ -24,14 +26,16 @@ module.exports = {
   },
 
   aws: {
-    accessKeyId: 'xxx',
-    secretAccessKey: 'xxx'
+    accessKeyId: process.env.AWS_KEY || 'AKIAJXC2Y2L36WCQXFFA',
+    secretAccessKey: process.env.AWS_SECRET || '/C4b2bt5hMnlODLLGAh+tFU+Ijc0h2mWyPXS9K65',
+    region: process.env.AWS_REGION || 'us-west-2'
   },
 
   email: {
-    from: process.env.MAILER_FROM || 'no-reply@your-domain.com',
+    from: process.env.MAILER_FROM || 'orristurmurminintur@gmail.com',
     options: {
-      service: process.env.MAILER_SERVICE_PROVIDER || 'ses'
+      service: process.env.MAILER_SERVICE_PROVIDER || 'ses',
+      region: process.env.AWS_REGION || 'us-west-2'
     }
   },
 
@@ -40,10 +44,6 @@ module.exports = {
     licenseKey: process.env.NEW_RELIC_LICENSE_KEY || '',
     appName: process.env.NEW_RELIC_APP_NAME || appTitle,
     logLevel: process.env.NEW_RELIC_LOG_LEVEL || 'info'
-  },
-
-  urls: {
-    resetPassword: 'https://your-domain.com/#/reset_password/' || process.env.URL_RESET_PASSWORD
   },
 
   agenda: {},
@@ -55,7 +55,7 @@ module.exports = {
 
   defaultClient: require('../default-client'),
   defaultUser: require('../default-user'),
-  adminMail: process.env.ADMIN_MAIL,
+  adminMail: process.env.ADMIN_MAIL || 'orristurmurminintur@gmail.com',
   roles: {
     USER: 'user',
     ADMIN: 'admin'
@@ -72,10 +72,10 @@ module.exports = {
     }
   },
   s3: {
-    key: process.env.S3_KEY || 'AKIAJXC2Y2L36WCQXFFA',
+    key: process.env.AWS_KEY || 'AKIAJXC2Y2L36WCQXFFA',
     bucket: process.env.S3_BUCKET || 'al.donnu.publications',
-    region: 'us-west-2',
-    secret: process.env.S3_SECRET || '/C4b2bt5hMnlODLLGAh+tFU+Ijc0h2mWyPXS9K65',
+    region: process.env.SES_REGION || 'us-west-2',
+    secret: process.env.AWS_SECRET || '/C4b2bt5hMnlODLLGAh+tFU+Ijc0h2mWyPXS9K65',
     domain: process.env.S3_DOMAIN || '',
     emulation: process.env.S3_EMULATION || false,
     publishLifetime: process.env.S3_PUBLISH_LIFETIME || 3600
