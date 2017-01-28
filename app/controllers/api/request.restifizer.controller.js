@@ -126,6 +126,9 @@ class RequestController extends BaseController {
         update: BaseController.createAction({
           enabled: false
         }),
+        count: BaseController.createAction({
+          enabled: true
+        }),
         selectOne: BaseController.createAction({
           auth: false
         }),
