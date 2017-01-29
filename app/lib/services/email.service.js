@@ -102,7 +102,7 @@ class EmailService {
       firstName: event.firstName,
       lastName: event.lastName,
       password: event.password,
-      url: '' /* TODO add URL here*/
+      url: config.adminPanelUrl
     };
 
     const options = _.extend({

@@ -9,6 +9,7 @@ const Request = require('config/mongoose').model('Request');
 const Publication = require('config/mongoose').model('Publication');
 const User = require('config/mongoose').model('User');
 const eventBus = require('config/event-bus');
+const config = require('config/config');
 
 function restifizer(restifizerController) {
   /**
@@ -74,7 +75,11 @@ function restifizer(restifizerController) {
 
           const createUserIfNeeded = () => {
             if (isRegistration) {
-              const user = Object.assign({password: Math.floor(Math.random() * 10000000000).toString()}, doc.extra);
+              const user = Object.assign({
+                password: Math.floor(Math.random() * 10000000000).toString(),
+                username: doc.username,
+                role: config.roles.USER
+              } , doc.extra);
               return User.create(user)
                 .then(() => {
                   return user;
@@ -82,11 +87,11 @@ function restifizer(restifizerController) {
             }
           };
 
-          return Bb.join(doc.save(), getPublication(), createUserIfNeeded());
+          return Bb.join(getPublication(), createUserIfNeeded());
         })
-        .spread((doc, publication, user) => {
+        .spread((publication, user) => {
 
-          const extra = Object.assign({username: doc.username}, doc.extra);
+          const extra = Object.assign({username: context.doc.username}, context.doc.extra);
           if (!isRegistration) {
 
             if (!publication) {
@@ -101,7 +106,7 @@ function restifizer(restifizerController) {
           }
           eventBus.emit(eventName, extra);
 
-          return doc;
+          return context.doc.save();
         });
     }
   }, 'changeStatus');
