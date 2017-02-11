@@ -3,6 +3,6 @@
  */
 module.exports = {
   name: process.env.CLIENT_NAME || 'default',
-  clientId: process.env.CLIENT_KEY || 'default',
+  clientId: process.env.CLIENT_ID || 'default',
   clientSecret: process.env.CLIENT_SECRET || 'default'
 };

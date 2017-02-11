@@ -10,7 +10,6 @@
   },
   "scripts": {
     "start": "gulp",
-    "postinstall": "gulp install",
     "test": "env NODE_ENV=test LOGGER_SUPPRESS_STDOUT=true gulp run test"
   },
   "dependencies": {
