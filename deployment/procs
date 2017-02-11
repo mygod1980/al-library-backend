@@ -1,0 +1,25 @@
+#!/bin/sh
+
+REL_DIR=`dirname $0`
+
+DIR=$( cd "$REL_DIR" && pwd )
+
+if [ -f "$REL_DIR/env" ]; then
+  . "$REL_DIR/env"
+fi
+
+cd "$REL_DIR/.."
+
+if [ -z "$1" ]
+then
+    COMMAND=start
+else
+    COMMAND=$1
+fi
+
+if [ -z "$NODE_ENV" ]
+then
+    NODE_ENV=development
+fi
+
+pm2 $COMMAND $DIR/procs-${NODE_ENV}.json

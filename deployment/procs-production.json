@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "al-library-backend",
+      "script": "node_modules/gulp/bin/gulp.js",
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "env": {
+      }
+    }
+  ]
+}
