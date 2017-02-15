@@ -137,7 +137,6 @@ function restifizer(restifizerController) {
           return S3Service.download(key);
         })
         .then(({file, contentType}) => {
-          /* TODO: set extension depending on type */
           scope.res.setHeader('Content-disposition', `attachment; filename=${_id}.${context.extension}`);
           scope.res.setHeader('Content-type', contentType);
           scope.encoding = 'binary';
@@ -166,7 +165,6 @@ function restifizer(restifizerController) {
     handler: function removeFile(scope) {
 
       if (!scope.isAdmin()) {
-        /* TODO: check if is student*/
         return Bb.reject(HTTP_STATUSES.FORBIDDEN.createError(`Only admins can remove publications files`));
       }
 

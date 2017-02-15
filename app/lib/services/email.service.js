@@ -143,7 +143,7 @@ class EmailService {
   sendDownloadLinkRequestApprovedEmail(event) {
     const templateData = {
       appName: config.productName,
-      url: `${event.downloadLink}/${event.username}/${event.code}`
+      url: `${event.downloadLink}/${encodeURIComponent(event.username)}/${encodeURIComponent(event.code)}`
     };
 
     const options = _.extend({
