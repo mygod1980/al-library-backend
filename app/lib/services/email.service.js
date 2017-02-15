@@ -134,7 +134,7 @@ class EmailService {
       username: event.username,
       firstName: event.firstName,
       lastName: event.lastName,
-      url: `${config.adminPanelUrl}/#/resources/requests/${event.requestId}`
+      url: `${config.adminPanelUrl}/#/resources/requests/${encodeURIComponent(event.requestId)}`
     };
 
     return this._sendEmail(downloadLinkRequestTpl, templateData, downloadLinkRequestOptions);
