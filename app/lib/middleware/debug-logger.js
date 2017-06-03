@@ -30,7 +30,7 @@ module.exports = function (app, log) {
     if (detailedLogging && res.statusCode !== 404) {
       return '\x1b[' + color + 'm\n\treq->\x1b[90m' + (req.body ? ('\n' + JSON.stringify(req.body, null, 2)) : '') +
         '\x1b[' + color + 'm\n\tres<-\x1b[90m' +
-        (res.restfulResult ? ('\n' + JSON.stringify(res.restfulResult, null, 2)) : '') + '\x1b[0m';
+        ((res.restfulResult && !res.restfulResult.stream) ? ('\n' + JSON.stringify(res.restfulResult, null, 2)) : '') + '\x1b[0m';
     } else {
       return '';
     }

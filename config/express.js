@@ -69,7 +69,7 @@ module.exports = function () {
   // require('app/lib/middleware/socket-io')(app);
 
   require('app/lib/middleware/restifizer')(app, log, 'app/controllers/api/**/*.js');
-
+  require('app/lib/middleware/restifizer-files')(app, log, 'app/controllers/file/**/*.js');
   require('app/lib/middleware/jobs-testing')(app);
   require('app/lib/middleware/testing')(app);
 

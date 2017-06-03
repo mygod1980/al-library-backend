@@ -11,8 +11,6 @@ const HTTP_STATUSES = require('http-statuses');
 const mongoose = require('config/mongoose');
 const config = require('config/config');
 const BaseController = require('app/lib/base.restifizer.controller');
-const publicationPlugin = require('app/lib/restifizer.plugin/publication.restifizer.plugin');
-
 const Publication = mongoose.model('Publication');
 
 /**
@@ -132,7 +130,7 @@ class PublicationController extends BaseController {
         },
         'createdAt',
         'updatedAt',
-        'downloadUrl'
+        'file',
       ],
       qFields: ['title', 'description'],
       readOnlyFields: ['createdAt', 'updatedAt'],
@@ -144,11 +142,6 @@ class PublicationController extends BaseController {
           auth: false
         })
       },
-      plugins: [
-        {
-          plugin: publicationPlugin.restifizer
-        }
-      ]
     });
 
     super(options);
@@ -163,9 +156,10 @@ class PublicationController extends BaseController {
   }
 
   post(model, scope) {
-    if (model.downloadUrl) {
+    if (model.file) {
       model.downloadUrl = `${scope.req.protocol}://${scope.req.get('host')}`+
-        `/api/publications/${model._id}/getFile`;
+        `/api/publications/${model._id}/file`;
+      delete model.file;
     }
 
     return model;

@@ -34,13 +34,8 @@ module.exports = function (mongoose) {
     publishedAt: {
       type: Number
     },
-    /* it is set only after we've uploaded file to s3 */
-    downloadUrl: {
-      type: String,
-      validate: validate({
-        validator: 'isURL'
-      }),
-    }
+    file: mongoose.Schema.Types.Mixed,
+
   }, {timestamps: true});
 
   return mongoose.model(modelName, schema);

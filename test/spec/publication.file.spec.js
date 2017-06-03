@@ -82,16 +82,17 @@ describe('Publication File', () => {
     });
   });
 
-  describe('Upload to s3 by admin', () => {
+  describe('Upload to GridFS by admin', () => {
 
     let response;
 
     before('send request', () => {
       return chakram
-        .post(`${baseUrl}/${publication._id}/upload`, {
-          file: fs.createReadStream('test/data/files/publication.pdf')
-        }, {
-          headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}
+        .post(`${baseUrl}/${publication._id}/file`, undefined, {
+          headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`},
+          formData: {
+            file: fs.createReadStream('test/data/files/publication.pdf'),
+          },
         })
         .then((result) => {
           response = result;
@@ -102,22 +103,19 @@ describe('Publication File', () => {
       expect(response).to.have.status(200);
       Object.assign(publication, response.body);
     });
-
-    it('should return downloadUrl', () => {
-      expect(publication.downloadUrl).to.exist;
-    });
   });
 
-  describe('Upload to s3 by user', () => {
+  describe('Upload to GridFS by user', () => {
 
     let response;
 
     before('send request', () => {
       return chakram
-        .post(`${baseUrl}/${publication._id}/upload`, {
-          file: fs.createReadStream('test/data/files/publication.pdf')
-        }, {
-          headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
+        .post(`${baseUrl}/${publication._id}/file`, undefined, {
+          headers: {'Authorization': `Bearer ${user.auth['access_token']}`},
+          formData:{
+            file: fs.createReadStream('test/data/files/publication.pdf'),
+          },
         })
         .then((result) => {
           response = result;
@@ -129,12 +127,12 @@ describe('Publication File', () => {
     });
   });
 
-  describe('Get file from s3', () => {
+  describe('Get file from GridFS', () => {
 
     let response;
     before('send request', () => {
       return chakram
-        .get(`${baseUrl}/${publication._id}/getFile`, {
+        .get(`${baseUrl}/${publication._id}/file`, {
           headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
         })
         .then((result) => {
@@ -144,13 +142,6 @@ describe('Publication File', () => {
 
     it('should return status 200', () => {
       expect(response).to.have.status(200);
-    });
-
-    it('should have attachment', () => {
-      return expect(response).to.have.header(
-        'content-disposition',
-        `attachment; filename=${publication._id}.pdf`
-      );
     });
   });
 
@@ -183,7 +174,7 @@ describe('Publication File', () => {
       const encodedCode = encodeURIComponent(accessCode.code);
 
       return chakram
-        .get(`${baseUrl}/${accessCode.publication.toString()}/download/${encodedUsername}/${encodedCode}`)
+        .get(`${baseUrl}/${accessCode.publication.toString()}/file/download/${encodedUsername}/${encodedCode}`)
         .then((result) => {
           response = result;
         });
@@ -193,13 +184,6 @@ describe('Publication File', () => {
       expect(response).to.have.status(200);
     });
 
-    it('should have attachment', () => {
-      return expect(response).to.have.header(
-        'content-disposition',
-        `attachment; filename=${publication._id}.pdf`
-      );
-    });
-
   });
 
   describe('Get requested file with invalid access code', () => {
@@ -207,7 +191,7 @@ describe('Publication File', () => {
 
     before('get file', () => {
       return chakram
-        .get(`${baseUrl}/${publication._id}/download/fakeusername/fakecode`)
+        .get(`${baseUrl}/${publication._id}/file/download/fakeusername/fakecode`)
         .then((result) => {
           response = result;
         });
@@ -222,7 +206,7 @@ describe('Publication File', () => {
     let response;
     before('send request', () => {
       return chakram
-        .post(`${baseUrl}/${publication._id}/removeFile`, {}, {
+        .delete(`${baseUrl}/${publication._id}/file`, {}, {
           headers: {'Authorization': `Bearer ${user.auth['access_token']}`}
         })
         .then((result) => {
@@ -240,7 +224,7 @@ describe('Publication File', () => {
     let downloadUrl;
     before('send request', () => {
       return chakram
-        .post(`${baseUrl}/${publication._id}/removeFile`, {}, {
+        .delete(`${baseUrl}/${publication._id}/file`, {}, {
           headers: {'Authorization': `Bearer ${adminUser.auth['access_token']}`}
         })
         .then((result) => {

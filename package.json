@@ -5,8 +5,8 @@
   "private": true,
   "license": "Commercial",
   "engines": {
-    "node": "^6.9.x",
-    "npm": "^3.10.x"
+    "node": "^7.8.x",
+    "npm": "^4.2.x"
   },
   "scripts": {
     "start": "gulp",
@@ -50,6 +50,7 @@
     "request-json": "^0.6.1",
     "request-promise": "^4.1.1",
     "restifizer": "^0.8.10",
+    "restifizer-files": "^0.5.6",
     "restifizer-mongoose-ds": "^0.1.5",
     "watchify": "^3.7.0",
     "winston": "^2.2.0"
