@@ -100,7 +100,7 @@ function restifizer(restifizerController) {
 
             extra.publication = publication;
             extra.downloadLink = `${scope.req.protocol}://${scope.req.get('host')}` +
-              `/api/publications/${publication._id}/download`;
+              `/api/publications/${publication._id}/file/download`;
           } else {
             extra.password = user.password;
           }
